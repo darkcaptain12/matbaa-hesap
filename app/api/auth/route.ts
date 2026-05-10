@@ -3,9 +3,11 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(req: NextRequest) {
   const { password } = await req.json();
 
-  if (password === process.env.APP_PASSWORD) {
+  const APP_PASSWORD = process.env.APP_PASSWORD || '145323';
+
+  if (password === APP_PASSWORD) {
     const res = NextResponse.json({ ok: true });
-    res.cookies.set('matbaa_auth', password, {
+    res.cookies.set('matbaa_auth', APP_PASSWORD, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',

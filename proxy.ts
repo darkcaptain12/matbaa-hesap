@@ -11,8 +11,9 @@ export function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
+  const APP_PASSWORD = process.env.APP_PASSWORD || '145323';
   const auth = req.cookies.get(AUTH_COOKIE)?.value;
-  if (auth === process.env.APP_PASSWORD) {
+  if (auth === APP_PASSWORD) {
     return NextResponse.next();
   }
 
