@@ -7,7 +7,7 @@ export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Login sayfası ve statik dosyalar kontrol dışı
-  if (pathname === LOGIN_PATH || pathname.startsWith('/_next') || pathname.startsWith('/favicon')) {
+  if (pathname === LOGIN_PATH || pathname.startsWith('/api/auth') || pathname.startsWith('/_next') || pathname.startsWith('/favicon')) {
     return NextResponse.next();
   }
 
