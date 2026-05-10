@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { PriceData } from '../types';
 import { Settings, X, RotateCcw, Save, Lock, Eye, EyeOff } from 'lucide-react';
 
-const ADMIN_PASSWORD = 'matbaa2024';
+const ADMIN_PASSWORD = '145323';
 
 interface Props {
   prices: PriceData;
