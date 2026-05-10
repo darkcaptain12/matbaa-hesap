@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const AUTH_COOKIE = 'matbaa_auth';
 const LOGIN_PATH = '/login';
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Login sayfası ve statik dosyalar kontrol dışı
