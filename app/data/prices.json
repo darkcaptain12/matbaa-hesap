@@ -1,0 +1,31 @@
+{
+  "materials": {
+    "folyo": {
+      "widths": [105, 126, 137, 160],
+      "unit": "cm"
+    },
+    "vinil": {
+      "widths": [110, 220, 250, 320],
+      "unit": "cm"
+    }
+  },
+  "uv": {
+    "vinil_beyaz": { "name": "Vinil Baskı (Arkası Beyaz)", "price": 220, "material": "vinil" },
+    "vinil_siyah": { "name": "Vinil Baskı (Arkası Siyah)", "price": 220, "material": "vinil" },
+    "folyo": { "name": "Folyo Baskı", "price": 200, "material": "folyo" },
+    "folyo_bas_kes": { "name": "Folyo Bas Kes", "price": 300, "material": "folyo" },
+    "oneway": { "name": "Oneway Vision", "price": 250, "material": "vinil" }
+  },
+  "solvent": {
+    "vinil_beyaz": { "name": "Vinil Baskı Arkası Beyaz", "price": 120, "material": "vinil" },
+    "vinil_siyah": { "name": "Vinil Baskı Arkası Siyah", "price": 140, "material": "vinil" },
+    "folyo": { "name": "Folyo Baskı", "price": 145, "material": "folyo" },
+    "folyo_bas_kes": { "name": "Folyo Bas Kes", "price": 280, "material": "folyo" },
+    "oneway": { "name": "Oneway Vision", "price": 175, "material": "vinil" }
+  },
+  "extras": {
+    "dikis_kusgozü": { "name": "Dikiş veya Kuşgözü", "price": 50 }
+  },
+  "kdv": 20,
+  "version": "1.0.0"
+}
