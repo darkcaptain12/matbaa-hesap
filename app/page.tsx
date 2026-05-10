@@ -106,7 +106,7 @@ function buildPdfHtml(jobs: Job[], balance: number, kdv: number, customerName?: 
 
 export default function Home() {
   const { prices, updatePrices, resetPrices } = usePrices();
-  const { customers, addCustomer, addEntry, deleteCustomer, deleteEntry } = useCustomers();
+  const { customers, loading: customersLoading, addCustomer, addEntry, deleteCustomer, deleteEntry } = useCustomers();
   const [form, dispatch] = useReducer(formReducer, initialForm);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [balance, setBalance] = useState('');
@@ -277,6 +277,7 @@ export default function Home() {
 
       <CustomerPanel
         customers={customers}
+        loading={customersLoading}
         open={customerPanelOpen}
         onOpen={() => setCustomerPanelOpen(true)}
         onClose={() => setCustomerPanelOpen(false)}

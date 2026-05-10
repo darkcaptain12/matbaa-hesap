@@ -12,6 +12,7 @@ const fmtDate = (iso: string) =>
 
 interface Props {
   customers: Customer[];
+  loading?: boolean;
   open: boolean;
   onOpen: () => void;
   onClose: () => void;
@@ -148,7 +149,7 @@ function CustomerRow({ customer, onAddEntry, onDeleteCustomer, onDeleteEntry }: 
   );
 }
 
-export default function CustomerPanel({ customers, open, onOpen: _onOpen, onClose, onAddEntry, onDeleteCustomer, onDeleteEntry }: Props) {
+export default function CustomerPanel({ customers, loading, open, onOpen: _onOpen, onClose, onAddEntry, onDeleteCustomer, onDeleteEntry }: Props) {
   const totalDebt = customers.reduce((s, c) => s + Math.max(0, netBalance(c)), 0);
 
   return (
@@ -187,7 +188,13 @@ export default function CustomerPanel({ customers, open, onOpen: _onOpen, onClos
           )}
 
           {/* Liste */}
-          {customers.length === 0 ? (
+          {loading ? (
+            <div className="space-y-2">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-14 bg-white/5 rounded-xl animate-pulse" />
+              ))}
+            </div>
+          ) : customers.length === 0 ? (
             <div className="text-center py-12 space-y-2">
               <Users className="w-10 h-10 text-gray-700 mx-auto" />
               <p className="text-gray-500 text-sm">Henüz müşteri eklenmedi</p>
