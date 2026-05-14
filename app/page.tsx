@@ -106,7 +106,7 @@ export default function Home() {
     if (!selectedCustomerId) return;
     addEntry(selectedCustomerId, {
       type: 'charge',
-      amount: job.totalWithKdv,
+      amount: job.subtotal,
       note: `${job.printTypeName} – ${job.width}×${job.height} cm`,
     });
   }, [selectedCustomerId, addEntry]);
@@ -129,7 +129,7 @@ export default function Home() {
         if (selectedCustomerId) {
           addEntry(selectedCustomerId, {
             type: 'charge',
-            amount: job.totalWithKdv,
+            amount: job.subtotal,
             note: `${job.printTypeName} – ${job.width}×${job.height} cm (PDF)`,
           });
         }

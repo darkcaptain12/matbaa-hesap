@@ -2,7 +2,16 @@
 import { useState } from 'react';
 import { Customer } from '../types';
 import { netBalance } from '../hooks/useCustomers';
-import { Users, X, Plus, Trash2, ChevronDown, ChevronUp, CreditCard, TrendingDown } from 'lucide-react';
+import { Users, X, Plus, Trash2, ChevronDown, ChevronUp, CreditCard, TrendingDown, MessageCircle, Pencil, Check } from 'lucide-react';
+
+function buildWhatsAppUrl(phone: string, name: string, balance: number): string {
+  let cleaned = phone.replace(/[\s\-\(\)\+]/g, '');
+  if (cleaned.startsWith('0')) cleaned = '90' + cleaned.slice(1);
+  else if (!cleaned.startsWith('90')) cleaned = '90' + cleaned;
+  const fmtBal = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(balance);
+  const msg = `Sayın ${name}, hesabınızda ${fmtBal} ₺ (KDV Hariç) borcunuz bulunmaktadır.\n\nMATBAA HESAP`;
+  return `https://wa.me/${cleaned}?text=${encodeURIComponent(msg)}`;
+}
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
@@ -17,6 +26,7 @@ interface Props {
   onOpen: () => void;
   onClose: () => void;
   onAddEntry: (customerId: string, entry: { type: 'charge' | 'payment'; amount: number; note: string }) => void;
+  onUpdateCustomer: (id: string, fields: { name?: string; phone?: string }) => void;
   onDeleteCustomer: (id: string) => void;
   onDeleteEntry: (customerId: string, entryId: string) => void;
 }
@@ -38,16 +48,26 @@ export function CustomerPanelTrigger({ customers, onOpen }: { customers: Custome
   );
 }
 
-function CustomerRow({ customer, onAddEntry, onDeleteCustomer, onDeleteEntry }: {
+function CustomerRow({ customer, onAddEntry, onUpdateCustomer, onDeleteCustomer, onDeleteEntry }: {
   customer: Customer;
   onAddEntry: Props['onAddEntry'];
+  onUpdateCustomer: Props['onUpdateCustomer'];
   onDeleteCustomer: Props['onDeleteCustomer'];
   onDeleteEntry: Props['onDeleteEntry'];
 }) {
   const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editName, setEditName] = useState(customer.name);
+  const [editPhone, setEditPhone] = useState(customer.phone || '');
   const [payAmt, setPayAmt] = useState('');
   const [payNote, setPayNote] = useState('');
   const balance = netBalance(customer);
+
+  const handleEditSave = () => {
+    if (!editName.trim()) return;
+    onUpdateCustomer(customer.id, { name: editName, phone: editPhone });
+    setEditing(false);
+  };
 
   const handlePayment = () => {
     const amt = parseFloat(payAmt);
@@ -62,25 +82,85 @@ function CustomerRow({ customer, onAddEntry, onDeleteCustomer, onDeleteEntry }: 
       {/* Başlık */}
       <div
         className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/3 transition-all"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => !editing && setOpen((v) => !v)}
       >
         <div className="flex-1 min-w-0">
-          <p className="text-white font-medium text-sm truncate">{customer.name}</p>
-          <p className="text-xs mt-0.5">
-            {balance > 0
-              ? <span className="text-red-400">Borç: {fmt(balance)} ₺</span>
-              : balance < 0
-              ? <span className="text-green-400">Alacak: {fmt(Math.abs(balance))} ₺</span>
-              : <span className="text-gray-500">Hesap sıfır</span>}
-          </p>
+          {editing ? (
+            <div className="space-y-1.5" onClick={(e) => e.stopPropagation()}>
+              <input
+                autoFocus
+                type="text"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleEditSave()}
+                placeholder="Müşteri adı"
+                className="w-full bg-black/40 border border-white/20 rounded-lg px-3 py-1.5 text-white text-sm focus:outline-none focus:border-orange-500/50"
+              />
+              <input
+                type="tel"
+                value={editPhone}
+                onChange={(e) => setEditPhone(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleEditSave()}
+                placeholder="Telefon numarası (ör. 05301234567)"
+                className="w-full bg-black/40 border border-white/20 rounded-lg px-3 py-1.5 text-white text-sm focus:outline-none focus:border-orange-500/50"
+              />
+            </div>
+          ) : (
+            <>
+              <p className="text-white font-medium text-sm truncate">{customer.name}</p>
+              <p className="text-xs mt-0.5">
+                {customer.phone
+                  ? <span className="text-gray-500">{customer.phone} · </span>
+                  : null}
+                {balance > 0
+                  ? <span className="text-red-400">Borç: {fmt(balance)} ₺</span>
+                  : balance < 0
+                  ? <span className="text-green-400">Alacak: {fmt(Math.abs(balance))} ₺</span>
+                  : <span className="text-gray-500">Hesap sıfır</span>}
+              </p>
+            </>
+          )}
         </div>
-        <button
-          onClick={(e) => { e.stopPropagation(); onDeleteCustomer(customer.id); }}
-          className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all shrink-0"
-        >
-          <Trash2 className="w-3.5 h-3.5" />
-        </button>
-        {open ? <ChevronUp className="w-4 h-4 text-gray-500 shrink-0" /> : <ChevronDown className="w-4 h-4 text-gray-500 shrink-0" />}
+
+        {editing ? (
+          <button
+            onClick={(e) => { e.stopPropagation(); handleEditSave(); }}
+            className="p-1.5 rounded-lg bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 transition-all shrink-0"
+            title="Kaydet"
+          >
+            <Check className="w-3.5 h-3.5" />
+          </button>
+        ) : (
+          <button
+            onClick={(e) => { e.stopPropagation(); setEditName(customer.name); setEditPhone(customer.phone || ''); setEditing(true); }}
+            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-500 hover:text-gray-300 transition-all shrink-0"
+            title="Düzenle"
+          >
+            <Pencil className="w-3.5 h-3.5" />
+          </button>
+        )}
+
+        {!editing && balance > 0 && customer.phone && (
+          <a
+            href={buildWhatsAppUrl(customer.phone, customer.name, balance)}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="p-1.5 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-400 transition-all shrink-0"
+            title="WhatsApp'a borç gönder"
+          >
+            <MessageCircle className="w-3.5 h-3.5" />
+          </a>
+        )}
+        {!editing && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onDeleteCustomer(customer.id); }}
+            className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all shrink-0"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        )}
+        {!editing && (open ? <ChevronUp className="w-4 h-4 text-gray-500 shrink-0" /> : <ChevronDown className="w-4 h-4 text-gray-500 shrink-0" />)}
       </div>
 
       {open && (
@@ -149,7 +229,7 @@ function CustomerRow({ customer, onAddEntry, onDeleteCustomer, onDeleteEntry }: 
   );
 }
 
-export default function CustomerPanel({ customers, loading, open, onOpen: _onOpen, onClose, onAddEntry, onDeleteCustomer, onDeleteEntry }: Props) {
+export default function CustomerPanel({ customers, loading, open, onOpen: _onOpen, onClose, onAddEntry, onUpdateCustomer, onDeleteCustomer, onDeleteEntry }: Props) {
   const totalDebt = customers.reduce((s, c) => s + Math.max(0, netBalance(c)), 0);
 
   return (
@@ -207,6 +287,7 @@ export default function CustomerPanel({ customers, loading, open, onOpen: _onOpe
                   key={c.id}
                   customer={c}
                   onAddEntry={onAddEntry}
+                  onUpdateCustomer={onUpdateCustomer}
                   onDeleteCustomer={onDeleteCustomer}
                   onDeleteEntry={onDeleteEntry}
                 />
