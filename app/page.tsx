@@ -73,7 +73,7 @@ function buildPdfHtml(jobs: Job[], balance: number, kdv: number, customerName?: 
 
 export default function Home() {
   const { prices, updatePrices, resetPrices } = usePrices();
-  const { customers, loading: customersLoading, addCustomer, updateCustomer, addEntry, deleteCustomer, deleteEntry } = useCustomers();
+  const { customers, loading: customersLoading, addCustomer, updateCustomer, addEntry, deleteCustomer, deleteEntry, migrateToKdvExcl } = useCustomers();
   const [form, dispatch] = useReducer(formReducer, initialForm);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [balance, setBalance] = useState('');
@@ -247,6 +247,8 @@ export default function Home() {
         onUpdateCustomer={updateCustomer}
         onDeleteCustomer={deleteCustomer}
         onDeleteEntry={deleteEntry}
+        onMigrateToKdvExcl={() => migrateToKdvExcl(prices.kdv)}
+        kdv={prices.kdv}
       />
       <AdminPanel prices={prices} onUpdate={updatePrices} onReset={resetPrices} />
       <WhatsAppMessagePanel

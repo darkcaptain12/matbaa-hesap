@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Customer } from '../types';
 import { netBalance } from '../hooks/useCustomers';
-import { Users, X, Plus, Trash2, ChevronDown, ChevronUp, CreditCard, TrendingDown, MessageCircle, Pencil, Check } from 'lucide-react';
+import { Users, X, Plus, Trash2, ChevronDown, ChevronUp, CreditCard, TrendingDown, MessageCircle, Pencil, Check, RefreshCw } from 'lucide-react';
 
 function buildWhatsAppUrl(phone: string, name: string, balance: number): string {
   let cleaned = phone.replace(/[\s\-\(\)\+]/g, '');
@@ -29,6 +29,8 @@ interface Props {
   onUpdateCustomer: (id: string, fields: { name?: string; phone?: string }) => void;
   onDeleteCustomer: (id: string) => void;
   onDeleteEntry: (customerId: string, entryId: string) => void;
+  onMigrateToKdvExcl: () => void;
+  kdv: number;
 }
 
 export function CustomerPanelTrigger({ customers, onOpen }: { customers: Customer[]; onOpen: () => void }) {
@@ -229,7 +231,7 @@ function CustomerRow({ customer, onAddEntry, onUpdateCustomer, onDeleteCustomer,
   );
 }
 
-export default function CustomerPanel({ customers, loading, open, onOpen: _onOpen, onClose, onAddEntry, onUpdateCustomer, onDeleteCustomer, onDeleteEntry }: Props) {
+export default function CustomerPanel({ customers, loading, open, onOpen: _onOpen, onClose, onAddEntry, onUpdateCustomer, onDeleteCustomer, onDeleteEntry, onMigrateToKdvExcl, kdv }: Props) {
   const totalDebt = customers.reduce((s, c) => s + Math.max(0, netBalance(c)), 0);
 
   return (
@@ -255,6 +257,27 @@ export default function CustomerPanel({ customers, loading, open, onOpen: _onOpe
               <X className="w-4 h-4" />
             </button>
           </div>
+
+          {/* KDV Migrasyon Uyarısı */}
+          {customers.some((c) => c.entries.some((e) => e.type === 'charge')) && (
+            <div className="bg-yellow-500/10 border border-yellow-500/25 rounded-xl px-4 py-3 space-y-2">
+              <p className="text-yellow-400 text-xs font-semibold">Eski Kayıtlar KDV Dahil mi?</p>
+              <p className="text-yellow-300/70 text-xs leading-relaxed">
+                Sistemde KDV dahil kaydedilmiş borçlar varsa bu butona basarak hepsini KDV hariç tutara çevir (%{kdv} KDV düşülür). Sadece bir kez çalıştır.
+              </p>
+              <button
+                onClick={() => {
+                  if (window.confirm(`Tüm borç kayıtlarından %${kdv} KDV düşülsün mü? Bu işlem geri alınamaz.`)) {
+                    onMigrateToKdvExcl();
+                  }
+                }}
+                className="flex items-center gap-1.5 bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/30 text-yellow-400 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+              >
+                <RefreshCw className="w-3 h-3" />
+                KDV Dahil → KDV Hariç Çevir
+              </button>
+            </div>
+          )}
 
           {/* Özet */}
           {customers.length > 0 && totalDebt > 0 && (
