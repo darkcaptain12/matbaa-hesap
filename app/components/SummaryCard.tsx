@@ -1,7 +1,7 @@
 'use client';
 import { Job } from '../types';
 import { calcSummary } from '../lib/calcJob';
-import { Copy, FileText, Zap, Wallet } from 'lucide-react';
+import { MessageCircle, FileText, Zap, Wallet } from 'lucide-react';
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
@@ -10,12 +10,12 @@ interface Props {
   jobs: Job[];
   balance: string;
   onBalanceChange: (v: string) => void;
-  onCopy: () => void;
+  onMessage: () => void;
   onPdf: () => void;
   kdv: number;
 }
 
-export default function SummaryCard({ jobs, balance, onBalanceChange, onCopy, onPdf, kdv }: Props) {
+export default function SummaryCard({ jobs, balance, onBalanceChange, onMessage, onPdf, kdv }: Props) {
   const bal = parseFloat(balance) || 0;
   const summary = jobs.length > 0 ? calcSummary(jobs, bal) : null;
 
@@ -100,11 +100,11 @@ export default function SummaryCard({ jobs, balance, onBalanceChange, onCopy, on
               {/* Aksiyonlar */}
               <div className="grid grid-cols-2 gap-3 pt-1">
                 <button
-                  onClick={onCopy}
-                  className="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 text-sm font-medium py-2.5 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  onClick={onMessage}
+                  className="flex items-center justify-center gap-2 bg-green-600/20 hover:bg-green-600/30 border border-green-500/30 text-green-400 text-sm font-medium py-2.5 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <Copy className="w-4 h-4" />
-                  Kopyala
+                  <MessageCircle className="w-4 h-4" />
+                  WP Mesajı
                 </button>
                 <button
                   onClick={onPdf}

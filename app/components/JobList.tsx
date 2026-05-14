@@ -29,14 +29,20 @@ function JobRow({ job, index, onRemove }: { job: Job; index: number; onRemove: (
           className="flex-1 min-w-0 cursor-pointer"
           onClick={() => setOpen((v) => !v)}
         >
-          <p className="text-white text-sm font-medium truncate leading-tight">{job.printTypeName}</p>
+          <p className="text-white text-sm font-medium truncate leading-tight">
+            {job.printTypeName}
+            {job.quantity > 1 && <span className="ml-2 text-xs bg-orange-500/20 text-orange-400 px-1.5 py-0.5 rounded-md font-bold">{job.quantity}×</span>}
+          </p>
           <p className="text-gray-500 text-xs leading-tight mt-0.5">
             {job.width}×{job.height} cm · {job.selectedMaterial.toUpperCase()} {job.selectedWidth}cm · {fmt(job.totalM2)} m² · <span className="text-gray-600">{fmt(job.unitPrice)} ₺/m²</span>
           </p>
         </div>
 
         {/* Fiyat */}
-        <span className="text-orange-400 font-bold text-sm shrink-0">{fmt(job.subtotal)} ₺</span>
+        <div className="flex flex-col items-end shrink-0">
+          <span className="text-orange-400 font-bold text-sm">{fmt(job.subtotal)} ₺</span>
+          <span className="text-gray-600 text-[10px] leading-tight">KDV Hariç</span>
+        </div>
 
         {/* Sil butonu — her zaman görünür */}
         <button
@@ -61,6 +67,12 @@ function JobRow({ job, index, onRemove }: { job: Job; index: number; onRemove: (
       {open && (
         <div className="px-4 pb-3 border-t border-white/8 pt-3">
           <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
+            {job.quantity > 1 && (
+              <>
+                <span className="text-gray-500">Adet</span>
+                <span className="text-orange-400 text-right font-semibold">{job.quantity}×</span>
+              </>
+            )}
             <span className="text-gray-500">Teknik</span>
             <span className="text-gray-300 text-right">{job.technique === 'uv' ? '⚡ UV Baskı' : '🌊 Solvent Baskı'}</span>
             <span className="text-gray-500">Seçilen en</span>

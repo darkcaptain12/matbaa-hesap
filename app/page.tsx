@@ -11,27 +11,13 @@ function genId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-// HTTP bağlantılarda clipboard API kısıtlı olabilir
-async function copyText(text: string): Promise<void> {
-  if (navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(text);
-  } else {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-  }
-}
 import InputForm from './components/InputForm';
 import JobList from './components/JobList';
 import SummaryCard from './components/SummaryCard';
 import AdminPanel from './components/AdminPanel';
 import CustomerSelector from './components/CustomerSelector';
 import CustomerPanel, { CustomerPanelTrigger } from './components/CustomerPanel';
+import WhatsAppMessagePanel from './components/WhatsAppMessagePanel';
 import { calcJob, calcSummary } from './lib/calcJob';
 import { Job, TechniqueKey } from './types';
 
@@ -58,32 +44,13 @@ function formReducer(state: FormState, action: { field: string; value: string | 
 const fmt = (n: number) =>
   new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
 
-function buildCopyText(jobs: Job[], balance: number, kdv: number, customerName?: string): string {
-  const s = calcSummary(jobs, balance);
-  const date = new Date().toLocaleDateString('tr-TR');
-  const lines = [
-    `📋 MATBAA FİYAT TEKLİFİ – ${date}`,
-    ...(customerName ? [`Müşteri: ${customerName}`] : []),
-    '━━━━━━━━━━━━━━━━━━━━',
-    ...jobs.map((j, i) =>
-      `${i + 1}. ${j.printTypeName} | ${j.width}×${j.height}cm | ${fmt(j.totalM2)} m² | ${fmt(j.subtotal)} ₺ (KDV hariç)`
-    ),
-    '━━━━━━━━━━━━━━━━━━━━',
-    `KDV Hariç  : ${fmt(s.totalSubtotal)} ₺`,
-    `KDV (%${kdv})  : +${fmt(s.totalKdv)} ₺`,
-    `KDV Dahil  : ${fmt(s.totalWithKdv)} ₺`,
-    ...(balance > 0 ? [`Bakiye     : -${fmt(balance)} ₺`, `ÖDENECEK   : ${fmt(s.finalPrice)} ₺`] : []),
-  ];
-  return lines.join('\n');
-}
-
 function buildPdfHtml(jobs: Job[], balance: number, kdv: number, customerName?: string): string {
   const s = calcSummary(jobs, balance);
   const date = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
   const rows = jobs.map((j, i) => `
     <tr>
       <td style="padding:10px 12px;color:#6b7280;font-size:13px;">${i + 1}</td>
-      <td style="padding:10px 12px;font-size:13px;color:#111;">${j.printTypeName}</td>
+      <td style="padding:10px 12px;font-size:13px;color:#111;">${j.printTypeName}${j.quantity > 1 ? ` <span style="background:#fed7aa;color:#c2410c;font-size:11px;font-weight:700;padding:2px 6px;border-radius:4px;">${j.quantity}×</span>` : ''}</td>
       <td style="padding:10px 12px;font-size:13px;color:#374151;text-align:center;">${j.width}×${j.height} cm</td>
       <td style="padding:10px 12px;font-size:13px;color:#374151;text-align:center;">${fmt(j.totalM2)} m²</td>
       <td style="padding:10px 12px;font-size:13px;font-weight:600;color:#111;text-align:right;">${fmt(j.subtotal)} ₺</td>
@@ -106,13 +73,14 @@ function buildPdfHtml(jobs: Job[], balance: number, kdv: number, customerName?: 
 
 export default function Home() {
   const { prices, updatePrices, resetPrices } = usePrices();
-  const { customers, loading: customersLoading, addCustomer, addEntry, deleteCustomer, deleteEntry } = useCustomers();
+  const { customers, loading: customersLoading, addCustomer, updateCustomer, addEntry, deleteCustomer, deleteEntry } = useCustomers();
   const [form, dispatch] = useReducer(formReducer, initialForm);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [balance, setBalance] = useState('');
-  const [copied, setCopied] = useState(false);
   const [selectedCustomerId, setSelectedCustomerId] = useState('');
   const [customerPanelOpen, setCustomerPanelOpen] = useState(false);
+  const [wpOpen, setWpOpen] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
   const selectedCustomer = customers.find((c) => c.id === selectedCustomerId);
 
@@ -129,6 +97,7 @@ export default function Home() {
     form.printType,
     form.extras,
     prices,
+    quantity,
   );
 
   const canAdd = previewJob !== null;
@@ -147,6 +116,7 @@ export default function Home() {
     const job = { ...previewJob, id: genId() };
     setJobs((prev) => [...prev, job]);
     chargeCustomer(job);
+    setQuantity(1);
   }, [previewJob, chargeCustomer]);
 
   const handleAddMultiple = useCallback((dims: { width: number; height: number }[]) => {
@@ -172,13 +142,9 @@ export default function Home() {
     setJobs((prev) => prev.filter((j) => j.id !== id));
   };
 
-  const handleCopy = () => {
+  const handleOpenMessage = () => {
     if (jobs.length === 0) return;
-    const text = buildCopyText(jobs, parseFloat(balance) || 0, prices.kdv, selectedCustomer?.name);
-    copyText(text).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }).catch(() => {});
+    setWpOpen(true);
   };
 
   const handlePdf = () => {
@@ -245,11 +211,13 @@ export default function Home() {
             <InputForm
               width={form.width}
               height={form.height}
+              quantity={quantity}
               technique={form.technique}
               printType={form.printType}
               extras={form.extras}
               prices={prices}
               onChange={onChange}
+              onQuantityChange={setQuantity}
               onAdd={handleAdd}
               onAddMultiple={handleAddMultiple}
               canAdd={canAdd}
@@ -262,18 +230,12 @@ export default function Home() {
             jobs={jobs}
             balance={balance}
             onBalanceChange={setBalance}
-            onCopy={handleCopy}
+            onMessage={handleOpenMessage}
             onPdf={handlePdf}
             kdv={prices.kdv}
           />
         </div>
       </main>
-
-      {copied && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-green-500 text-white text-sm font-semibold px-4 py-2 rounded-full shadow-lg z-50">
-          ✓ Panoya kopyalandı
-        </div>
-      )}
 
       <CustomerPanel
         customers={customers}
@@ -282,10 +244,20 @@ export default function Home() {
         onOpen={() => setCustomerPanelOpen(true)}
         onClose={() => setCustomerPanelOpen(false)}
         onAddEntry={addEntry}
+        onUpdateCustomer={updateCustomer}
         onDeleteCustomer={deleteCustomer}
         onDeleteEntry={deleteEntry}
       />
       <AdminPanel prices={prices} onUpdate={updatePrices} onReset={resetPrices} />
+      <WhatsAppMessagePanel
+        open={wpOpen}
+        onClose={() => setWpOpen(false)}
+        jobs={jobs}
+        balance={parseFloat(balance) || 0}
+        kdv={prices.kdv}
+        customerName={selectedCustomer?.name}
+        customerPhone={selectedCustomer?.phone}
+      />
     </div>
   );
 }
