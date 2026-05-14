@@ -68,12 +68,12 @@ function buildPdfHtml(jobs: Job[], balance: number, kdv: number, customerName?: 
     ${balance > 0 ? `<div class="final-box"><div><div style="color:#9ca3af;font-size:12px;">Müşteri bakiyesi düşüldükten sonra</div><div style="color:#6b7280;font-size:12px;margin-top:2px;">Bakiye: -${fmt(balance)} ₺</div></div><div style="color:#fff;font-size:28px;font-weight:900;">${fmt(s.finalPrice)} ₺</div></div>` : ''}
   </div></div>
   <div class="footer"><span style="font-size:12px;color:#9ca3af;">Teklif Tarihi: ${date}</span><span style="font-size:13px;font-weight:700;color:#ea580c;">MATBAA HESAP</span></div>
-  </div></body></html>`;
+  </div><script>window.onload=function(){setTimeout(function(){window.print();},400);}</script></body></html>`;
 }
 
 export default function Home() {
   const { prices, updatePrices, resetPrices } = usePrices();
-  const { customers, loading: customersLoading, addCustomer, updateCustomer, addEntry, deleteCustomer, deleteEntry, migrateToKdvExcl } = useCustomers();
+  const { customers, loading: customersLoading, addCustomer, updateCustomer, addEntry, deleteCustomer, deleteEntry, migrateToKdvExcl, migrateToKdvIncl } = useCustomers();
   const [form, dispatch] = useReducer(formReducer, initialForm);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [balance, setBalance] = useState('');
@@ -150,11 +150,22 @@ export default function Home() {
   const handlePdf = () => {
     if (jobs.length === 0) return;
     const html = buildPdfHtml(jobs, parseFloat(balance) || 0, prices.kdv, selectedCustomer?.name);
-    const win = window.open('', '_blank');
-    if (!win) return;
-    win.document.write(html);
-    win.document.close();
-    setTimeout(() => win.print(), 500);
+    const blob = new Blob([html], { type: 'text/html; charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const win = window.open(url, '_blank');
+    if (!win) {
+      // popup engellenirse iframe ile dene
+      const iframe = document.createElement('iframe');
+      iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;';
+      document.body.appendChild(iframe);
+      iframe.contentDocument?.write(html);
+      iframe.contentDocument?.close();
+      setTimeout(() => {
+        iframe.contentWindow?.print();
+        setTimeout(() => document.body.removeChild(iframe), 2000);
+      }, 500);
+    }
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
   };
 
   return (
@@ -248,6 +259,7 @@ export default function Home() {
         onDeleteCustomer={deleteCustomer}
         onDeleteEntry={deleteEntry}
         onMigrateToKdvExcl={() => migrateToKdvExcl(prices.kdv)}
+        onMigrateToKdvIncl={() => migrateToKdvIncl(prices.kdv)}
         kdv={prices.kdv}
       />
       <AdminPanel prices={prices} onUpdate={updatePrices} onReset={resetPrices} />

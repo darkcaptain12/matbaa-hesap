@@ -30,6 +30,7 @@ interface Props {
   onDeleteCustomer: (id: string) => void;
   onDeleteEntry: (customerId: string, entryId: string) => void;
   onMigrateToKdvExcl: () => void;
+  onMigrateToKdvIncl: () => void;
   kdv: number;
 }
 
@@ -231,7 +232,7 @@ function CustomerRow({ customer, onAddEntry, onUpdateCustomer, onDeleteCustomer,
   );
 }
 
-export default function CustomerPanel({ customers, loading, open, onOpen: _onOpen, onClose, onAddEntry, onUpdateCustomer, onDeleteCustomer, onDeleteEntry, onMigrateToKdvExcl, kdv }: Props) {
+export default function CustomerPanel({ customers, loading, open, onOpen: _onOpen, onClose, onAddEntry, onUpdateCustomer, onDeleteCustomer, onDeleteEntry, onMigrateToKdvExcl, onMigrateToKdvIncl, kdv }: Props) {
   const totalDebt = customers.reduce((s, c) => s + Math.max(0, netBalance(c)), 0);
 
   return (
@@ -258,24 +259,37 @@ export default function CustomerPanel({ customers, loading, open, onOpen: _onOpe
             </button>
           </div>
 
-          {/* KDV Migrasyon Uyarısı */}
+          {/* Toplu KDV İşlemleri */}
           {customers.some((c) => c.entries.some((e) => e.type === 'charge')) && (
-            <div className="bg-yellow-500/10 border border-yellow-500/25 rounded-xl px-4 py-3 space-y-2">
-              <p className="text-yellow-400 text-xs font-semibold">Eski Kayıtlar KDV Dahil mi?</p>
-              <p className="text-yellow-300/70 text-xs leading-relaxed">
-                Sistemde KDV dahil kaydedilmiş borçlar varsa bu butona basarak hepsini KDV hariç tutara çevir (%{kdv} KDV düşülür). Sadece bir kez çalıştır.
+            <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 space-y-2">
+              <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider">Toplu KDV İşlemleri</p>
+              <p className="text-gray-500 text-xs leading-relaxed">
+                Tüm borç kayıtlarını toplu olarak KDV dahil/hariç'e çevirir. İşlem geri alınamaz.
               </p>
-              <button
-                onClick={() => {
-                  if (window.confirm(`Tüm borç kayıtlarından %${kdv} KDV düşülsün mü? Bu işlem geri alınamaz.`)) {
-                    onMigrateToKdvExcl();
-                  }
-                }}
-                className="flex items-center gap-1.5 bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/30 text-yellow-400 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
-              >
-                <RefreshCw className="w-3 h-3" />
-                KDV Dahil → KDV Hariç Çevir
-              </button>
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  onClick={() => {
+                    if (window.confirm(`Tüm borçlara %${kdv} KDV eklensin mi? (×${(1 + kdv / 100).toFixed(2)})`)) {
+                      onMigrateToKdvIncl();
+                    }
+                  }}
+                  className="flex items-center gap-1.5 bg-blue-500/15 hover:bg-blue-500/25 border border-blue-500/30 text-blue-400 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+                >
+                  <RefreshCw className="w-3 h-3" />
+                  +KDV Ekle (%{kdv})
+                </button>
+                <button
+                  onClick={() => {
+                    if (window.confirm(`Tüm borçlardan %${kdv} KDV düşülsün mü? (÷${(1 + kdv / 100).toFixed(2)})`)) {
+                      onMigrateToKdvExcl();
+                    }
+                  }}
+                  className="flex items-center gap-1.5 bg-yellow-500/15 hover:bg-yellow-500/25 border border-yellow-500/30 text-yellow-400 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+                >
+                  <RefreshCw className="w-3 h-3" />
+                  −KDV Çıkar (%{kdv})
+                </button>
+              </div>
             </div>
           )}
 

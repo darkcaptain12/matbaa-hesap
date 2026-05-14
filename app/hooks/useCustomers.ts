@@ -108,7 +108,7 @@ export function useCustomers() {
     });
   }, [persist]);
 
-  // Mevcut KDV dahil charge tutarlarını KDV hariç'e çevirir (tek seferlik migrasyon)
+  // Mevcut KDV dahil charge tutarlarını KDV hariç'e çevirir
   const migrateToKdvExcl = useCallback((kdv: number) => {
     const divisor = 1 + kdv / 100;
     setCustomers((prev) => {
@@ -123,5 +123,20 @@ export function useCustomers() {
     });
   }, [persist]);
 
-  return { customers, loading, addCustomer, updateCustomer, addEntry, deleteCustomer, deleteEntry, migrateToKdvExcl };
+  // Mevcut KDV hariç charge tutarlarına KDV ekler
+  const migrateToKdvIncl = useCallback((kdv: number) => {
+    const multiplier = 1 + kdv / 100;
+    setCustomers((prev) => {
+      const next = prev.map((c) => ({
+        ...c,
+        entries: c.entries.map((e) =>
+          e.type === 'charge' ? { ...e, amount: Math.round((e.amount * multiplier) * 100) / 100 } : e
+        ),
+      }));
+      persist(next);
+      return next;
+    });
+  }, [persist]);
+
+  return { customers, loading, addCustomer, updateCustomer, addEntry, deleteCustomer, deleteEntry, migrateToKdvExcl, migrateToKdvIncl };
 }
