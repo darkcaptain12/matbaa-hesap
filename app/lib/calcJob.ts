@@ -30,7 +30,8 @@ export function calcJob(
   technique: 'uv' | 'solvent',
   printType: string,
   extras: string[],
-  prices: PriceData
+  prices: PriceData,
+  quantity: number = 1
 ): Job | null {
   if (!width || !height || !printType || width <= 0 || height <= 0) return null;
 
@@ -47,11 +48,12 @@ export function calcJob(
   const firePercent = ((totalM2 - exactM2) / exactM2) * 100;
 
   const unitPrice = selectedOption.price;
-  const basePrice = totalM2 * unitPrice;
+  const qty = Math.max(1, quantity);
+  const basePrice = totalM2 * unitPrice * qty;
 
   let extrasPrice = 0;
   extras.forEach((extra) => {
-    if (prices.extras[extra]) extrasPrice += prices.extras[extra].price * totalM2;
+    if (prices.extras[extra]) extrasPrice += prices.extras[extra].price * totalM2 * qty;
   });
 
   const subtotal = basePrice + extrasPrice;
@@ -65,6 +67,7 @@ export function calcJob(
     technique,
     printType,
     extras,
+    quantity: qty,
     selectedMaterial: material,
     selectedWidth,
     cutLength,
