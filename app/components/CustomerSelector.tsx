@@ -11,13 +11,14 @@ interface Props {
   customers: Customer[];
   selectedId: string;
   onSelect: (id: string) => void;
-  onAddCustomer: (name: string) => void;
+  onAddCustomer: (name: string, phone?: string) => void;
 }
 
 export default function CustomerSelector({ customers, selectedId, onSelect, onAddCustomer }: Props) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [newName, setNewName] = useState('');
+  const [newPhone, setNewPhone] = useState('');
   const ref = useRef<HTMLDivElement>(null);
 
   const selected = customers.find((c) => c.id === selectedId);
@@ -34,8 +35,9 @@ export default function CustomerSelector({ customers, selectedId, onSelect, onAd
 
   const handleAdd = () => {
     if (!newName.trim()) return;
-    onAddCustomer(newName.trim());
+    onAddCustomer(newName.trim(), newPhone.trim() || undefined);
     setNewName('');
+    setNewPhone('');
     setOpen(false);
   };
 
@@ -119,14 +121,22 @@ export default function CustomerSelector({ customers, selectedId, onSelect, onAd
             </div>
 
             {/* Yeni Müşteri */}
-            <div className="p-2 border-t border-white/8">
+            <div className="p-2 border-t border-white/8 space-y-1.5">
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-                  placeholder="Yeni müşteri adı..."
+                  placeholder="Müşteri adı..."
+                  className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-orange-500/50"
+                />
+                <input
+                  type="tel"
+                  value={newPhone}
+                  onChange={(e) => setNewPhone(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+                  placeholder="Telefon (opsiyonel)"
                   className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-orange-500/50"
                 />
                 <button

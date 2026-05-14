@@ -8,11 +8,13 @@ const PdfDimensionReader = dynamic(() => import('./PdfDimensionReader'), { ssr: 
 interface Props {
   width: string;
   height: string;
+  quantity: number;
   technique: TechniqueKey;
   printType: string;
   extras: string[];
   prices: PriceData;
   onChange: (field: string, value: string | string[]) => void;
+  onQuantityChange: (q: number) => void;
   onAdd: () => void;
   onAddMultiple: (dims: { width: number; height: number }[]) => void;
   canAdd: boolean;
@@ -28,7 +30,7 @@ const techniqueInfo = {
 };
 
 export default function InputForm({
-  width, height, technique, printType, extras, prices, onChange, onAdd, onAddMultiple, canAdd,
+  width, height, quantity, technique, printType, extras, prices, onChange, onQuantityChange, onAdd, onAddMultiple, canAdd,
 }: Props) {
   const printOptions = Object.entries(prices[technique]);
   const extrasOptions = Object.entries(prices.extras);
@@ -46,7 +48,7 @@ export default function InputForm({
           <Ruler className="w-4 h-4 text-orange-400" />
           <h2 className="text-white font-semibold text-sm uppercase tracking-wider">Ölçüler (cm)</h2>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3">
           {[
             { label: 'En (cm)', field: 'width', val: width, ph: 'ör. 100' },
             { label: 'Boy (cm)', field: 'height', val: height, ph: 'ör. 60' },
@@ -60,10 +62,37 @@ export default function InputForm({
                 onChange={(e) => onChange(field, e.target.value)}
                 placeholder={ph}
                 onKeyDown={(e) => handleEnter(e, canAdd, onAdd)}
-              className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white text-lg font-semibold placeholder-gray-700 focus:outline-none focus:border-orange-500/50 transition-all"
+                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white text-lg font-semibold placeholder-gray-700 focus:outline-none focus:border-orange-500/50 transition-all"
               />
             </div>
           ))}
+          <div className="space-y-1.5">
+            <label className="text-xs text-gray-500 uppercase tracking-wider">Adet</label>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => onQuantityChange(Math.max(1, quantity - 1))}
+                className="w-10 h-[52px] bg-black/40 border border-white/10 rounded-xl text-white text-xl font-bold hover:bg-white/10 transition-all shrink-0 flex items-center justify-center"
+              >
+                −
+              </button>
+              <input
+                type="number"
+                min="1"
+                value={quantity}
+                onChange={(e) => onQuantityChange(Math.max(1, parseInt(e.target.value) || 1))}
+                onKeyDown={(e) => handleEnter(e, canAdd, onAdd)}
+                className="w-full bg-black/40 border border-white/10 rounded-xl px-2 py-3 text-white text-lg font-semibold text-center placeholder-gray-700 focus:outline-none focus:border-orange-500/50 transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => onQuantityChange(quantity + 1)}
+                className="w-10 h-[52px] bg-black/40 border border-white/10 rounded-xl text-white text-xl font-bold hover:bg-white/10 transition-all shrink-0 flex items-center justify-center"
+              >
+                +
+              </button>
+            </div>
+          </div>
         </div>
         <div className="mt-3">
           <PdfDimensionReader onAddJobs={onAddMultiple} />

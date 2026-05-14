@@ -65,8 +65,8 @@ export function useCustomers() {
     }, 500);
   }, []);
 
-  const addCustomer = useCallback((name: string): Customer => {
-    const c: Customer = { id: genId(), name: name.trim(), entries: [] };
+  const addCustomer = useCallback((name: string, phone?: string): Customer => {
+    const c: Customer = { id: genId(), name: name.trim(), phone: phone?.trim() || undefined, entries: [] };
     setCustomers((prev) => { const next = [...prev, c]; persist(next); return next; });
     return c;
   }, [persist]);
@@ -78,6 +78,16 @@ export function useCustomers() {
           ...c,
           entries: [...c.entries, { ...entry, id: genId(), date: new Date().toISOString() }],
         }
+      );
+      persist(next);
+      return next;
+    });
+  }, [persist]);
+
+  const updateCustomer = useCallback((customerId: string, fields: { name?: string; phone?: string }) => {
+    setCustomers((prev) => {
+      const next = prev.map((c) =>
+        c.id !== customerId ? c : { ...c, ...fields, name: fields.name?.trim() || c.name, phone: fields.phone?.trim() || undefined }
       );
       persist(next);
       return next;
@@ -98,5 +108,5 @@ export function useCustomers() {
     });
   }, [persist]);
 
-  return { customers, loading, addCustomer, addEntry, deleteCustomer, deleteEntry };
+  return { customers, loading, addCustomer, updateCustomer, addEntry, deleteCustomer, deleteEntry };
 }
