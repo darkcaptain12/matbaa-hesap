@@ -31,6 +31,7 @@ export interface Job {
   technique: TechniqueKey;
   printType: string;
   extras: string[];
+  quantity: number;
   // calculated fields
   selectedMaterial: MaterialType;
   selectedWidth: number;
@@ -69,5 +70,6 @@ export interface CustomerEntry {
 export interface Customer {
   id: string;
   name: string;
+  phone?: string;
   entries: CustomerEntry[];
 }
