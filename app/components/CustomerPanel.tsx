@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Customer } from '../types';
 import { netBalance } from '../hooks/useCustomers';
-import { Users, X, Plus, Trash2, ChevronDown, ChevronUp, CreditCard, TrendingDown, MessageCircle, Pencil, Check, RefreshCw } from 'lucide-react';
+import { Users, X, Plus, Trash2, ChevronDown, ChevronUp, CreditCard, TrendingDown, MessageCircle, Pencil, Check, RefreshCw, FileDown } from 'lucide-react';
 
 function buildWhatsAppUrl(phone: string, name: string, balance: number): string {
   let cleaned = phone.replace(/[\s\-\(\)\+]/g, '');
@@ -15,6 +15,61 @@ function buildWhatsAppUrl(phone: string, name: string, balance: number): string 
 
 const fmt = (n: number) =>
   new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+
+function downloadCustomerPdf(customer: Customer, balance: number) {
+  const date = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+  const rows = [...customer.entries].reverse().map((e) => {
+    const isCharge = e.type === 'charge';
+    return `<tr>
+      <td style="padding:9px 12px;font-size:12px;color:#6b7280;">${new Date(e.date).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+      <td style="padding:9px 12px;font-size:12px;color:#111;">${e.note}</td>
+      <td style="padding:9px 12px;font-size:12px;font-weight:600;text-align:right;color:${isCharge ? '#dc2626' : '#16a34a'};">${isCharge ? '+' : '-'}${fmt(e.amount)} ₺</td>
+    </tr>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8"/><title>${customer.name} – Hesap Ekstresi</title>
+  <style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;background:#f5f5f5;color:#1a1a1a;}
+  .page{max-width:680px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 40px rgba(0,0,0,.12);}
+  .header{background:linear-gradient(135deg,#ea580c,#f97316);padding:32px 36px;}
+  .header h1{color:#fff;font-size:22px;font-weight:800;}
+  .header p{color:rgba(255,255,255,.75);font-size:13px;margin-top:3px;}
+  .body{padding:28px 36px;}
+  table{width:100%;border-collapse:collapse;}
+  th{background:#f9fafb;padding:9px 12px;text-align:left;font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;}
+  th:last-child{text-align:right;}
+  tr:nth-child(even) td{background:#fafafa;}
+  .summary{margin-top:20px;background:${balance > 0 ? 'linear-gradient(135deg,#fff1f2,#fff)' : 'linear-gradient(135deg,#f0fdf4,#fff)'};border:2px solid ${balance > 0 ? '#fecaca' : '#bbf7d0'};border-radius:12px;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;}
+  .summary-label{font-size:11px;color:${balance > 0 ? '#991b1b' : '#166534'};font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
+  .summary-value{font-size:32px;font-weight:900;color:${balance > 0 ? '#dc2626' : '#16a34a'};letter-spacing:-1px;}
+  .footer{background:#f9fafb;padding:16px 36px;display:flex;justify-content:space-between;}
+  </style></head>
+  <body><div class="page">
+  <div class="header">
+    <h1>${customer.name}</h1>
+    <p>${customer.phone ? customer.phone + ' · ' : ''}Hesap Ekstresi</p>
+  </div>
+  <div class="body">
+    ${customer.entries.length === 0 ? '<p style="color:#9ca3af;font-size:14px;text-align:center;padding:40px 0;">Henüz işlem yok</p>' : `
+    <table>
+      <thead><tr><th>Tarih</th><th>Açıklama</th><th style="text-align:right">Tutar</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`}
+    <div class="summary">
+      <div>
+        <div class="summary-label">${balance > 0 ? 'Toplam Borç (KDV Hariç)' : balance < 0 ? 'Alacak' : 'Hesap Durumu'}</div>
+        <div class="summary-value">${fmt(Math.abs(balance))} ₺</div>
+      </div>
+      <div style="font-size:28px;">${balance > 0 ? '🔴' : balance < 0 ? '🟢' : '⚪'}</div>
+    </div>
+  </div>
+  <div class="footer"><span style="font-size:11px;color:#9ca3af;">${date}</span><span style="font-size:12px;font-weight:700;color:#ea580c;">MATBAA HESAP</span></div>
+  </div><script>window.onload=function(){setTimeout(function(){window.print();},400);}</script></body></html>`;
+
+  const blob = new Blob([html], { type: 'text/html; charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  window.open(url, '_blank');
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
 
 const fmtDate = (iso: string) =>
   new Date(iso).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -154,6 +209,15 @@ function CustomerRow({ customer, onAddEntry, onUpdateCustomer, onDeleteCustomer,
           >
             <MessageCircle className="w-3.5 h-3.5" />
           </a>
+        )}
+        {!editing && customer.entries.length > 0 && (
+          <button
+            onClick={(e) => { e.stopPropagation(); downloadCustomerPdf(customer, balance); }}
+            className="p-1.5 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 transition-all shrink-0"
+            title="Hesap ekstresini PDF olarak indir"
+          >
+            <FileDown className="w-3.5 h-3.5" />
+          </button>
         )}
         {!editing && (
           <button
