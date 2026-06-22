@@ -1,75 +1,77 @@
-export type TechniqueKey = 'uv' | 'solvent';
+export type TechniqueKey = 'uv' | 'solvent' | 'uv_roll';
 export type MaterialType = 'folyo' | 'vinil';
+export type PriceTier = 'above20' | 'above5' | 'below5';
 
-export interface PrintOption {
-  name: string;
-  price: number;
-  material: MaterialType;
+export interface ProductPrices {
+  above20: number;
+  above5: number;
+  below5: number;
 }
 
-export interface ExtrasOption {
+export interface Product {
   name: string;
-  price: number;
+  material: MaterialType;
+  prices: ProductPrices;
+}
+
+export interface Technique {
+  name: string;
+  products: Record<string, Product>;
+}
+
+export interface MaterialConfig {
+  widths: number[];
 }
 
 export interface PriceData {
-  materials: {
-    folyo: { widths: number[]; unit: string };
-    vinil: { widths: number[]; unit: string };
-  };
-  uv: Record<string, PrintOption>;
-  solvent: Record<string, PrintOption>;
-  extras: Record<string, ExtrasOption>;
+  techniques: Record<TechniqueKey, Technique>;
+  materials: Record<MaterialType, MaterialConfig>;
   kdv: number;
-  version: string;
+  discountRate: number;
+  minJobPrice: number;
 }
 
 export interface Job {
   id: string;
+  fileName: string;
   width: number;
   height: number;
   technique: TechniqueKey;
-  printType: string;
-  extras: string[];
-  quantity: number;
-  // calculated fields
-  selectedMaterial: MaterialType;
+  productKey: string;
+  productName: string;
+  material: MaterialType;
   selectedWidth: number;
   cutLength: number;
   rotated: boolean;
   totalM2: number;
-  firePercent: number;
-  unitPrice: number;
-  basePrice: number;
-  extrasPrice: number;
-  subtotal: number;
-  kdvAmount: number;
-  totalWithKdv: number;
-  printTypeName: string;
+  wastePercent: number;
+  groupKey: string;
 }
 
-export interface Summary {
+export interface JobGroup {
+  groupKey: string;
+  technique: TechniqueKey;
+  techniqueName: string;
+  productKey: string;
+  productName: string;
+  materialType: MaterialType;
+  materialWidth: number;
   jobs: Job[];
-  totalSubtotal: number;
-  totalKdv: number;
-  totalWithKdv: number;
-  balance: number;
-  finalPrice: number;
+  totalM2: number;
+  priceTier: PriceTier;
+  priceTierLabel: string;
+  unitPrice: number;
+  normalTotal: number;
+  discountAmount: number;
+  groupTotal: number;
 }
 
-// ─── Müşteri ──────────────────────────────────────────────────────────────────
-
-export interface CustomerEntry {
-  id: string;
-  type: 'charge' | 'payment';
-  amount: number;
-  date: string;
-  note: string;
-}
-
-export interface Customer {
-  id: string;
-  name: string;
-  phone?: string;
-  entries: CustomerEntry[];
+export interface QuoteSummary {
+  groups: JobGroup[];
+  subtotal: number;
+  discountTotal: number;
+  afterDiscount: number;
+  kdvRate: number;
+  kdvAmount: number;
+  grandTotal: number;
 }

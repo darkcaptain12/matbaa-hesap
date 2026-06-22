@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import type { PriceData } from '../types';
 import defaultPrices from '../data/prices.json';
 
-const STORAGE_KEY = 'matbaa_prices';
+const STORAGE_KEY = 'matbaa_pro_prices';
 
 export function usePrices() {
   const [prices, setPrices] = useState<PriceData>(defaultPrices as PriceData);
@@ -12,9 +12,10 @@ export function usePrices() {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       try {
-        setPrices(JSON.parse(stored));
+        const parsed = JSON.parse(stored);
+        setPrices({ ...defaultPrices as PriceData, ...parsed });
       } catch {
-        // corrupted, use defaults
+        // corrupted
       }
     }
   }, []);

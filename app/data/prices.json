@@ -1,31 +1,156 @@
 {
-  "materials": {
-    "folyo": {
-      "widths": [105, 126, 137, 160],
-      "unit": "cm"
+  "techniques": {
+    "uv": {
+      "name": "UV",
+      "products": {
+        "arkasi_beyaz_folyo": {
+          "name": "Arkası Beyaz Folyo",
+          "material": "folyo",
+          "prices": { "above20": 185, "above5": 220, "below5": 240 }
+        },
+        "arkasi_gri_folyo": {
+          "name": "Arkası Gri Folyo",
+          "material": "folyo",
+          "prices": { "above20": 200, "above5": 240, "below5": 260 }
+        },
+        "seffaf_folyo": {
+          "name": "Şeffaf Folyo",
+          "material": "folyo",
+          "prices": { "above20": 200, "above5": 240, "below5": 260 }
+        },
+        "kumlama_folyo": {
+          "name": "Kumlama Folyo",
+          "material": "folyo",
+          "prices": { "above20": 350, "above5": 390, "below5": 420 }
+        },
+        "reflektif_folyo": {
+          "name": "Reflektif Folyo",
+          "material": "folyo",
+          "prices": { "above20": 350, "above5": 390, "below5": 420 }
+        },
+        "lumen_folyo": {
+          "name": "Lümen Folyo",
+          "material": "folyo",
+          "prices": { "above20": 300, "above5": 340, "below5": 360 }
+        },
+        "one_way_vision": {
+          "name": "One Way Vision",
+          "material": "vinil",
+          "prices": { "above20": 250, "above5": 290, "below5": 320 }
+        },
+        "folyo_bas_kes": {
+          "name": "Folyo Bas-Kes",
+          "material": "folyo",
+          "prices": { "above20": 300, "above5": 350, "below5": 400 }
+        },
+        "folyo_kesim": {
+          "name": "Folyo Kesim",
+          "material": "folyo",
+          "prices": { "above20": 100, "above5": 120, "below5": 140 }
+        },
+        "tasima_folyosu": {
+          "name": "Taşıma Folyosu",
+          "material": "folyo",
+          "prices": { "above20": 80, "above5": 100, "below5": 120 }
+        },
+        "laminasyon": {
+          "name": "Laminasyon",
+          "material": "folyo",
+          "prices": { "above20": 80, "above5": 100, "below5": 120 }
+        }
+      }
     },
-    "vinil": {
-      "widths": [110, 220, 250, 320],
-      "unit": "cm"
+    "solvent": {
+      "name": "Solvent",
+      "products": {
+        "arkasi_beyaz_folyo": {
+          "name": "Arkası Beyaz Folyo",
+          "material": "folyo",
+          "prices": { "above20": 110, "above5": 145, "below5": 170 }
+        },
+        "arkasi_gri_folyo": {
+          "name": "Arkası Gri Folyo",
+          "material": "folyo",
+          "prices": { "above20": 115, "above5": 155, "below5": 180 }
+        },
+        "seffaf_folyo": {
+          "name": "Şeffaf Folyo",
+          "material": "folyo",
+          "prices": { "above20": 115, "above5": 155, "below5": 180 }
+        },
+        "kumlama_folyo": {
+          "name": "Kumlama Folyo",
+          "material": "folyo",
+          "prices": { "above20": 275, "above5": 315, "below5": 350 }
+        },
+        "reflektif_folyo": {
+          "name": "Reflektif Folyo",
+          "material": "folyo",
+          "prices": { "above20": 275, "above5": 315, "below5": 350 }
+        },
+        "lumen_folyo": {
+          "name": "Lümen Folyo",
+          "material": "folyo",
+          "prices": { "above20": 225, "above5": 265, "below5": 300 }
+        },
+        "one_way_vision": {
+          "name": "One Way Vision",
+          "material": "vinil",
+          "prices": { "above20": 175, "above5": 215, "below5": 250 }
+        },
+        "folyo_bas_kes": {
+          "name": "Folyo Bas-Kes",
+          "material": "folyo",
+          "prices": { "above20": 280, "above5": 320, "below5": 350 }
+        },
+        "folyo_kesim": {
+          "name": "Folyo Kesim",
+          "material": "folyo",
+          "prices": { "above20": 100, "above5": 120, "below5": 140 }
+        },
+        "tasima_folyosu": {
+          "name": "Taşıma Folyosu",
+          "material": "folyo",
+          "prices": { "above20": 80, "above5": 100, "below5": 120 }
+        },
+        "laminasyon": {
+          "name": "Laminasyon",
+          "material": "folyo",
+          "prices": { "above20": 80, "above5": 100, "below5": 120 }
+        }
+      }
+    },
+    "uv_roll": {
+      "name": "UV Roll",
+      "products": {
+        "arkasi_beyaz_folyo": {
+          "name": "Arkası Beyaz Folyo",
+          "material": "folyo",
+          "prices": { "above20": 185, "above5": 220, "below5": 240 }
+        },
+        "beyaz_vinil": {
+          "name": "Beyaz Vinil",
+          "material": "vinil",
+          "prices": { "above20": 205, "above5": 240, "below5": 260 }
+        },
+        "folyo_bas_kes": {
+          "name": "Folyo Bas-Kes",
+          "material": "folyo",
+          "prices": { "above20": 300, "above5": 350, "below5": 400 }
+        },
+        "one_way_vision": {
+          "name": "One Way Vision",
+          "material": "vinil",
+          "prices": { "above20": 250, "above5": 290, "below5": 320 }
+        }
+      }
     }
   },
-  "uv": {
-    "vinil_beyaz": { "name": "Vinil Baskı (Arkası Beyaz)", "price": 220, "material": "vinil" },
-    "vinil_siyah": { "name": "Vinil Baskı (Arkası Siyah)", "price": 220, "material": "vinil" },
-    "folyo": { "name": "Folyo Baskı", "price": 200, "material": "folyo" },
-    "folyo_bas_kes": { "name": "Folyo Bas Kes", "price": 300, "material": "folyo" },
-    "oneway": { "name": "Oneway Vision", "price": 250, "material": "vinil" }
+  "materials": {
+    "folyo": { "widths": [105, 126, 137, 160] },
+    "vinil": { "widths": [110, 220, 250, 320] }
   },
-  "solvent": {
-    "vinil_beyaz": { "name": "Vinil Baskı Arkası Beyaz", "price": 120, "material": "vinil" },
-    "vinil_siyah": { "name": "Vinil Baskı Arkası Siyah", "price": 140, "material": "vinil" },
-    "folyo": { "name": "Folyo Baskı", "price": 145, "material": "folyo" },
-    "folyo_bas_kes": { "name": "Folyo Bas Kes", "price": 280, "material": "folyo" },
-    "oneway": { "name": "Oneway Vision", "price": 175, "material": "vinil" }
-  },
-  "extras": {
-    "dikis_kusgozü": { "name": "Dikiş veya Kuşgözü", "price": 50 }
-  },
-  "kdv": 20,
-  "version": "1.0.0"
+  "kdv": 0,
+  "discountRate": 20,
+  "minJobPrice": 0
 }
