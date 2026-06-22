@@ -23,26 +23,23 @@ export default function Home() {
   const { customers, loading: customersLoading, addCustomer, updateCustomer, addEntry, deleteCustomer, deleteEntry, toggleSabitFiyat } = useCustomers();
 
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [technique, setTechnique] = useState<TechniqueKey>('uv');
+  const [technique, setTechnique] = useState<TechniqueKey>('solvent_folyo');
   const [productKey, setProductKey] = useState('');
-  const [sadeceBaski, setSadeceBaski] = useState(false);
   const [companyName, setCompanyName] = useState('');
   const [adminOpen, setAdminOpen] = useState(false);
   const [customerPanelOpen, setCustomerPanelOpen] = useState(false);
   const [selectedCustomerId, setSelectedCustomerId] = useState('');
 
   const selectedCustomer = customers.find((c) => c.id === selectedCustomerId);
-
   const sabitFiyat = selectedCustomer?.sabitFiyat ?? false;
 
   const quote = useMemo(
-    () => calcQuote(jobs, prices, sadeceBaski, sabitFiyat),
-    [jobs, prices, sadeceBaski, sabitFiyat]
+    () => calcQuote(jobs, prices, false, sabitFiyat),
+    [jobs, prices, sabitFiyat]
   );
 
   const handleAddJobs = useCallback((newJobs: Job[]) => {
     setJobs((prev) => [...prev, ...newJobs]);
-    // Müşteri seçiliyse her iş için borç kaydı ekle
     if (selectedCustomerId) {
       for (const job of newJobs) {
         const techData = prices.techniques[job.technique];
@@ -50,7 +47,7 @@ export default function Home() {
         if (!product) continue;
         const tier = job.totalM2 >= 20 ? 'above20' : (job.totalM2 >= 5 || sabitFiyat) ? 'above5' : 'below5' as const;
         const unitPrice = product.prices[tier];
-        const amount = job.totalM2 * unitPrice * (sadeceBaski ? (1 - prices.discountRate / 100) : 1);
+        const amount = job.totalM2 * unitPrice;
         addEntry(selectedCustomerId, {
           type: 'charge',
           amount,
@@ -58,7 +55,7 @@ export default function Home() {
         });
       }
     }
-  }, [selectedCustomerId, addEntry, prices, sadeceBaski]);
+  }, [selectedCustomerId, addEntry, prices, sabitFiyat]);
 
   const handleRemoveJob = useCallback((id: string) => {
     setJobs((prev) => prev.filter((j) => j.id !== id));
@@ -74,8 +71,8 @@ export default function Home() {
 
   const handleGeneratePdf = useCallback(() => {
     if (quote.groups.length === 0) return;
-    openQuotePdf(quote, companyName || selectedCustomer?.name || '', sadeceBaski);
-  }, [quote, companyName, selectedCustomer, sadeceBaski]);
+    openQuotePdf(quote, companyName || selectedCustomer?.name || '', false);
+  }, [quote, companyName, selectedCustomer]);
 
   return (
     <div className="min-h-screen bg-[#060606] text-white">
@@ -101,7 +98,6 @@ export default function Home() {
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr_380px] gap-5 items-start">
-          {/* Sol: Config + Müşteri */}
           <motion.div
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
@@ -118,14 +114,11 @@ export default function Home() {
               prices={prices}
               technique={technique}
               productKey={productKey}
-              sadeceBaski={sadeceBaski}
               onTechniqueChange={setTechnique}
               onProductChange={setProductKey}
-              onSadeceBaskiChange={setSadeceBaski}
             />
           </motion.div>
 
-          {/* Orta: Upload + İşler + Gruplar */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -146,11 +139,10 @@ export default function Home() {
               onClear={handleClearJobs}
             />
             {jobs.length > 0 && (
-              <GroupResults groups={quote.groups} sadeceBaski={sadeceBaski} />
+              <GroupResults groups={quote.groups} />
             )}
           </motion.div>
 
-          {/* Sağ: Özet */}
           <motion.div
             initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
@@ -159,7 +151,6 @@ export default function Home() {
           >
             <TotalSummary
               quote={quote}
-              sadeceBaski={sadeceBaski}
               companyName={companyName || selectedCustomer?.name || ''}
               onCompanyNameChange={setCompanyName}
               onGeneratePdf={handleGeneratePdf}

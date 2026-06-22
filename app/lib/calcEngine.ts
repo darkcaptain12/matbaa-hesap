@@ -9,6 +9,7 @@ function genId(): string {
 
 export const MATERIAL_LABELS: Record<MaterialGroup, string> = {
   foil: 'Folyo',
+  branda: 'Branda',
   vinyl: 'Vinil',
   oneway: 'One Way',
 };

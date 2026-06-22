@@ -1,5 +1,5 @@
-export type TechniqueKey = 'uv' | 'solvent' | 'uv_roll';
-export type MaterialGroup = 'foil' | 'vinyl' | 'oneway';
+export type TechniqueKey = 'solvent_folyo' | 'solvent_branda' | 'uv_roll';
+export type MaterialGroup = 'foil' | 'branda' | 'vinyl' | 'oneway';
 export type PriceTier = 'above20' | 'above5' | 'below5';
 
 export interface ProductPrices {

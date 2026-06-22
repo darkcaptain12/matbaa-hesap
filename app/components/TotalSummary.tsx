@@ -6,13 +6,12 @@ import { fmt } from '../lib/calcEngine';
 
 interface Props {
   quote: QuoteSummary;
-  sadeceBaski: boolean;
   companyName: string;
   onCompanyNameChange: (v: string) => void;
   onGeneratePdf: () => void;
 }
 
-export default function TotalSummary({ quote, sadeceBaski, companyName, onCompanyNameChange, onGeneratePdf }: Props) {
+export default function TotalSummary({ quote, companyName, onCompanyNameChange, onGeneratePdf }: Props) {
   if (quote.groups.length === 0) {
     return (
       <div className="bg-[#0e0e0e] border border-white/8 rounded-2xl overflow-hidden">
@@ -72,24 +71,12 @@ export default function TotalSummary({ quote, sadeceBaski, companyName, onCompan
 
           {/* KDV Hariç */}
           <div className="bg-white/3 border border-white/8 rounded-xl p-4">
-            <p className="text-gray-400 text-[10px] uppercase tracking-widest mb-1">
-              {sadeceBaski ? 'İndirimli Toplam (KDV Hariç)' : 'KDV Hariç Toplam'}
-            </p>
+            <p className="text-gray-400 text-[10px] uppercase tracking-widest mb-1">KDV Hariç Toplam</p>
             <p className="text-white font-black text-3xl sm:text-4xl tracking-tight leading-none">
               {fmt(quote.afterDiscount)}
               <span className="text-orange-400 text-xl ml-1">₺</span>
             </p>
           </div>
-
-          {/* İndirim */}
-          {sadeceBaski && quote.discountTotal > 0 && (
-            <div className="flex items-center justify-between bg-green-500/6 border border-green-500/15 rounded-xl px-4 py-2.5">
-              <span className="text-green-400 text-xs font-medium flex items-center gap-1.5">
-                <Percent className="w-3 h-3" /> Sadece Baskı İndirimi
-              </span>
-              <span className="text-green-400 font-bold text-sm">-{fmt(quote.discountTotal)} ₺</span>
-            </div>
-          )}
 
           {/* KDV */}
           {quote.kdvRate > 0 && (

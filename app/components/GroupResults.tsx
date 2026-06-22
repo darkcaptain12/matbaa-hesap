@@ -6,10 +6,9 @@ import { fmt, MATERIAL_LABELS } from '../lib/calcEngine';
 
 interface Props {
   groups: JobGroup[];
-  sadeceBaski: boolean;
 }
 
-export default function GroupResults({ groups, sadeceBaski }: Props) {
+export default function GroupResults({ groups }: Props) {
   if (groups.length === 0) return null;
 
   return (
@@ -78,33 +77,12 @@ export default function GroupResults({ groups, sadeceBaski }: Props) {
 
             {/* Price */}
             <div className="mt-3 pt-3 border-t border-white/6">
-              {sadeceBaski ? (
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-gray-500">Normal Fiyat</span>
-                    <span className="text-gray-400 line-through">{fmt(group.normalTotal)} ₺</span>
-                  </div>
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-green-400 flex items-center gap-1">
-                      <Percent className="w-2.5 h-2.5" /> İndirim
-                    </span>
-                    <span className="text-green-400">-{fmt(group.discountAmount)} ₺</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-400 text-xs font-medium flex items-center gap-1">
-                      <TrendingUp className="w-3 h-3" /> Grup Toplamı
-                    </span>
-                    <span className="text-orange-400 font-bold text-base">{fmt(group.groupTotal)} ₺</span>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-400 text-xs font-medium flex items-center gap-1">
-                    <TrendingUp className="w-3 h-3" /> Grup Toplamı
-                  </span>
-                  <span className="text-orange-400 font-bold text-base">{fmt(group.groupTotal)} ₺</span>
-                </div>
-              )}
+              <div className="flex items-center justify-between">
+                <span className="text-gray-400 text-xs font-medium flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3" /> Grup Toplamı
+                </span>
+                <span className="text-orange-400 font-bold text-base">{fmt(group.groupTotal)} ₺</span>
+              </div>
             </div>
           </div>
         </motion.div>

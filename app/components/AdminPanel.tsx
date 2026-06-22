@@ -32,7 +32,7 @@ export default function AdminPanel({ open, onClose, prices, onUpdate, onReset }:
   const [err, setErr] = useState('');
   const [local, setLocal] = useState<PriceData>(prices);
   const [saved, setSaved] = useState(false);
-  const [activeTab, setActiveTab] = useState<TechniqueKey>('uv');
+  const [activeTab, setActiveTab] = useState<TechniqueKey>('solvent_folyo');
 
   const close = () => { onClose(); setAuthed(false); setPwd(''); setErr(''); };
 
@@ -63,7 +63,7 @@ export default function AdminPanel({ open, onClose, prices, onUpdate, onReset }:
     }));
   };
 
-  const setMaterialWidth = (mg: 'foil' | 'vinyl' | 'oneway', index: number, value: number) => {
+  const setMaterialWidth = (mg: 'foil' | 'branda' | 'vinyl' | 'oneway', index: number, value: number) => {
     setLocal((p) => {
       const widths = [...p.materials[mg].widths];
       widths[index] = value;
@@ -83,8 +83,8 @@ export default function AdminPanel({ open, onClose, prices, onUpdate, onReset }:
   };
 
   const tabs: { key: TechniqueKey; label: string }[] = [
-    { key: 'uv', label: 'UV' },
-    { key: 'solvent', label: 'Solvent' },
+    { key: 'solvent_folyo', label: 'S. Folyo' },
+    { key: 'solvent_branda', label: 'S. Branda' },
     { key: 'uv_roll', label: 'UV Roll' },
   ];
 
@@ -184,7 +184,7 @@ export default function AdminPanel({ open, onClose, prices, onUpdate, onReset }:
                   {/* Material Widths */}
                   <div className="space-y-3">
                     <h3 className="text-gray-400 text-[10px] uppercase tracking-widest font-semibold">Malzeme Enleri (cm)</h3>
-                    {([['foil', 'Folyo'], ['vinyl', 'Vinil'], ['oneway', 'One Way Vision']] as const).map(([mat, label]) => (
+                    {([['foil', 'Folyo'], ['branda', 'Branda'], ['vinyl', 'Vinil'], ['oneway', 'One Way Vision']] as const).map(([mat, label]) => (
                       <div key={mat} className="bg-black/30 rounded-xl p-3">
                         <p className="text-xs text-gray-400 font-semibold mb-2">{label}</p>
                         <div className="flex gap-2 flex-wrap">

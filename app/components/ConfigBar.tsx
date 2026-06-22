@@ -1,6 +1,5 @@
 'use client';
-import { motion } from 'framer-motion';
-import { Zap, Waves, RotateCw, Check } from 'lucide-react';
+import { Waves, RotateCw, Flag } from 'lucide-react';
 import type { PriceData, TechniqueKey } from '../types';
 import { MATERIAL_LABELS } from '../lib/calcEngine';
 
@@ -8,21 +7,40 @@ interface Props {
   prices: PriceData;
   technique: TechniqueKey;
   productKey: string;
-  sadeceBaski: boolean;
   onTechniqueChange: (t: TechniqueKey) => void;
   onProductChange: (p: string) => void;
-  onSadeceBaskiChange: (v: boolean) => void;
 }
 
-const techniqueConfig: Record<TechniqueKey, { label: string; icon: typeof Zap; color: string }> = {
-  uv: { label: 'UV', icon: Zap, color: 'blue' },
-  solvent: { label: 'Solvent', icon: Waves, color: 'purple' },
-  uv_roll: { label: 'UV Roll', icon: RotateCw, color: 'cyan' },
+const techniqueConfig: Record<TechniqueKey, { label: string; icon: typeof Waves; accent: string; bg: string; border: string; text: string }> = {
+  solvent_folyo: {
+    label: 'Solvent Folyo',
+    icon: Waves,
+    accent: 'purple',
+    bg: 'rgba(168,85,247,0.15)',
+    border: 'rgba(168,85,247,0.4)',
+    text: '#c084fc',
+  },
+  solvent_branda: {
+    label: 'Solvent Branda',
+    icon: Flag,
+    accent: 'emerald',
+    bg: 'rgba(16,185,129,0.15)',
+    border: 'rgba(16,185,129,0.4)',
+    text: '#34d399',
+  },
+  uv_roll: {
+    label: 'UV Roll',
+    icon: RotateCw,
+    accent: 'cyan',
+    bg: 'rgba(34,211,238,0.15)',
+    border: 'rgba(34,211,238,0.4)',
+    text: '#22d3ee',
+  },
 };
 
 export default function ConfigBar({
-  prices, technique, productKey, sadeceBaski,
-  onTechniqueChange, onProductChange, onSadeceBaskiChange,
+  prices, technique, productKey,
+  onTechniqueChange, onProductChange,
 }: Props) {
   const techData = prices.techniques[technique];
   const products = techData ? Object.entries(techData.products) : [];
@@ -33,7 +51,7 @@ export default function ConfigBar({
       <div className="bg-[#0e0e0e] border border-white/8 rounded-2xl p-4">
         <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-3">Baskı Tekniği</p>
         <div className="grid grid-cols-3 gap-2">
-          {(Object.entries(techniqueConfig) as [TechniqueKey, typeof techniqueConfig.uv][]).map(([key, cfg]) => {
+          {(Object.entries(techniqueConfig) as [TechniqueKey, typeof techniqueConfig.solvent_folyo][]).map(([key, cfg]) => {
             const Icon = cfg.icon;
             const active = technique === key;
             return (
@@ -42,23 +60,17 @@ export default function ConfigBar({
                 onClick={() => { onTechniqueChange(key); onProductChange(''); }}
                 className={`relative flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border transition-all duration-200 ${
                   active
-                    ? `bg-${cfg.color}-500/15 border-${cfg.color}-500/40 text-${cfg.color}-400`
+                    ? ''
                     : 'bg-black/20 border-white/8 text-gray-500 hover:border-white/15 hover:text-gray-400'
                 }`}
                 style={active ? {
-                  backgroundColor: cfg.color === 'blue' ? 'rgba(59,130,246,0.15)' :
-                                   cfg.color === 'purple' ? 'rgba(168,85,247,0.15)' :
-                                   'rgba(34,211,238,0.15)',
-                  borderColor: cfg.color === 'blue' ? 'rgba(59,130,246,0.4)' :
-                               cfg.color === 'purple' ? 'rgba(168,85,247,0.4)' :
-                               'rgba(34,211,238,0.4)',
-                  color: cfg.color === 'blue' ? '#60a5fa' :
-                         cfg.color === 'purple' ? '#c084fc' :
-                         '#22d3ee',
+                  backgroundColor: cfg.bg,
+                  borderColor: cfg.border,
+                  color: cfg.text,
                 } : undefined}
               >
                 <Icon className="w-5 h-5" />
-                <span className="text-xs font-bold">{cfg.label}</span>
+                <span className="text-[10px] font-bold leading-tight text-center">{cfg.label}</span>
               </button>
             );
           })}
@@ -68,7 +80,7 @@ export default function ConfigBar({
       {/* Product Selection */}
       <div className="bg-[#0e0e0e] border border-white/8 rounded-2xl p-4">
         <p className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold mb-3">Ürün Seçimi</p>
-        <div className="space-y-1.5 max-h-[300px] overflow-y-auto pr-1">
+        <div className="space-y-1.5 max-h-[340px] overflow-y-auto pr-1">
           {products.map(([key, product]) => {
             const active = productKey === key;
             return (
@@ -84,6 +96,7 @@ export default function ConfigBar({
                 <span className="text-sm font-medium">{product.name}</span>
                 <span className={`text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md ${
                   product.materialGroup === 'foil' ? 'bg-amber-500/10 text-amber-500/80'
+                    : product.materialGroup === 'branda' ? 'bg-emerald-500/10 text-emerald-500/80'
                     : product.materialGroup === 'oneway' ? 'bg-purple-500/10 text-purple-500/80'
                     : 'bg-sky-500/10 text-sky-500/80'
                 }`}>
@@ -94,34 +107,6 @@ export default function ConfigBar({
           })}
         </div>
       </div>
-
-      {/* Sadece Baskı Toggle */}
-      <motion.button
-        whileTap={{ scale: 0.98 }}
-        onClick={() => onSadeceBaskiChange(!sadeceBaski)}
-        className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl border transition-all duration-200 ${
-          sadeceBaski
-            ? 'bg-green-500/10 border-green-500/30'
-            : 'bg-[#0e0e0e] border-white/8 hover:border-white/15'
-        }`}
-      >
-        <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
-          sadeceBaski ? 'bg-green-500 border-green-500' : 'border-gray-600'
-        }`}>
-          {sadeceBaski && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
-        </div>
-        <div className="flex-1 text-left">
-          <p className={`text-sm font-semibold ${sadeceBaski ? 'text-green-400' : 'text-gray-400'}`}>
-            Sadece Baskı
-          </p>
-          <p className="text-[11px] text-gray-600">Tüm fiyatlara %{20} indirim uygulanır</p>
-        </div>
-        {sadeceBaski && (
-          <span className="text-xs font-bold text-green-400 bg-green-500/15 px-2.5 py-1 rounded-lg">
-            -%20
-          </span>
-        )}
-      </motion.button>
     </div>
   );
 }

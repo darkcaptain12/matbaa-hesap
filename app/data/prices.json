@@ -1,122 +1,117 @@
 {
   "techniques": {
-    "uv": {
-      "name": "UV",
+    "solvent_folyo": {
+      "name": "Solvent Folyo",
       "products": {
         "arkasi_beyaz_folyo": {
           "name": "Arkası Beyaz Folyo",
           "materialGroup": "foil",
-          "prices": { "above20": 185, "above5": 220, "below5": 240 }
+          "prices": { "above20": 135, "above5": 145, "below5": 180 }
         },
         "arkasi_gri_folyo": {
           "name": "Arkası Gri Folyo",
           "materialGroup": "foil",
-          "prices": { "above20": 200, "above5": 240, "below5": 260 }
+          "prices": { "above20": 135, "above5": 145, "below5": 180 }
         },
         "seffaf_folyo": {
           "name": "Şeffaf Folyo",
           "materialGroup": "foil",
-          "prices": { "above20": 200, "above5": 240, "below5": 260 }
+          "prices": { "above20": 135, "above5": 145, "below5": 180 }
         },
         "kumlama_folyo": {
           "name": "Kumlama Folyo",
           "materialGroup": "foil",
-          "prices": { "above20": 350, "above5": 390, "below5": 420 }
+          "prices": { "above20": 210, "above5": 230, "below5": 290 }
         },
         "reflektif_folyo": {
           "name": "Reflektif Folyo",
           "materialGroup": "foil",
-          "prices": { "above20": 350, "above5": 390, "below5": 420 }
+          "prices": { "above20": 265, "above5": 280, "below5": 470 }
         },
         "lumen_folyo": {
           "name": "Lümen Folyo",
           "materialGroup": "foil",
-          "prices": { "above20": 300, "above5": 340, "below5": 360 }
+          "prices": { "above20": 660, "above5": 670, "below5": 730 }
         },
         "one_way_vision": {
           "name": "One Way Vision",
-          "materialGroup": "oneway",
-          "prices": { "above20": 250, "above5": 290, "below5": 320 }
+          "materialGroup": "foil",
+          "prices": { "above20": 155, "above5": 175, "below5": 235 }
         },
         "folyo_bas_kes": {
           "name": "Folyo Bas-Kes",
           "materialGroup": "foil",
-          "prices": { "above20": 300, "above5": 350, "below5": 400 }
+          "prices": { "above20": 250, "above5": 280, "below5": 300 }
         },
         "folyo_kesim": {
           "name": "Folyo Kesim",
           "materialGroup": "foil",
-          "prices": { "above20": 100, "above5": 120, "below5": 140 }
+          "prices": { "above20": 180, "above5": 200, "below5": 250 }
         },
         "tasima_folyosu": {
           "name": "Taşıma Folyosu",
           "materialGroup": "foil",
-          "prices": { "above20": 80, "above5": 100, "below5": 120 }
+          "prices": { "above20": 130, "above5": 150, "below5": 190 }
         },
         "laminasyon": {
           "name": "Laminasyon",
           "materialGroup": "foil",
-          "prices": { "above20": 80, "above5": 100, "below5": 120 }
+          "prices": { "above20": 160, "above5": 170, "below5": 250 }
         }
       }
     },
-    "solvent": {
-      "name": "Solvent",
+    "solvent_branda": {
+      "name": "Solvent Branda",
       "products": {
-        "arkasi_beyaz_folyo": {
-          "name": "Arkası Beyaz Folyo",
-          "materialGroup": "foil",
-          "prices": { "above20": 110, "above5": 145, "below5": 170 }
+        "440gr_dokme_avrupa_branda": {
+          "name": "440gr Dökme Avrupa Branda",
+          "materialGroup": "branda",
+          "prices": { "above20": 110, "above5": 120, "below5": 175 }
         },
-        "arkasi_gri_folyo": {
-          "name": "Arkası Gri Folyo",
-          "materialGroup": "foil",
-          "prices": { "above20": 115, "above5": 155, "below5": 180 }
+        "440gr_dokme_arkasi_siyah_branda": {
+          "name": "440gr Dökme Arkası Siyah Branda",
+          "materialGroup": "branda",
+          "prices": { "above20": 130, "above5": 140, "below5": 210 }
         },
-        "seffaf_folyo": {
-          "name": "Şeffaf Folyo",
-          "materialGroup": "foil",
-          "prices": { "above20": 115, "above5": 155, "below5": 180 }
+        "280gr_cin_branda": {
+          "name": "280gr Çin Branda",
+          "materialGroup": "branda",
+          "prices": { "above20": 90, "above5": 100, "below5": 160 }
         },
-        "kumlama_folyo": {
-          "name": "Kumlama Folyo",
-          "materialGroup": "foil",
-          "prices": { "above20": 275, "above5": 315, "below5": 350 }
+        "510gr_dokme_isikli_branda": {
+          "name": "510gr Dökme Işıklı Branda",
+          "materialGroup": "branda",
+          "prices": { "above20": 175, "above5": 190, "below5": 310 }
         },
-        "reflektif_folyo": {
-          "name": "Reflektif Folyo",
-          "materialGroup": "foil",
-          "prices": { "above20": 275, "above5": 315, "below5": 350 }
+        "400gr_mesh_branda": {
+          "name": "400gr Mesh Branda",
+          "materialGroup": "branda",
+          "prices": { "above20": 150, "above5": 160, "below5": 200 }
         },
-        "lumen_folyo": {
-          "name": "Lümen Folyo",
-          "materialGroup": "foil",
-          "prices": { "above20": 225, "above5": 265, "below5": 300 }
+        "polyester_canvas": {
+          "name": "Polyester Canvas",
+          "materialGroup": "branda",
+          "prices": { "above20": 350, "above5": 380, "below5": 410 }
         },
-        "one_way_vision": {
-          "name": "One Way Vision",
-          "materialGroup": "oneway",
-          "prices": { "above20": 175, "above5": 215, "below5": 250 }
+        "reflektif_branda": {
+          "name": "Reflektif Branda",
+          "materialGroup": "branda",
+          "prices": { "above20": 190, "above5": 200, "below5": 360 }
         },
-        "folyo_bas_kes": {
-          "name": "Folyo Bas-Kes",
-          "materialGroup": "foil",
-          "prices": { "above20": 280, "above5": 320, "below5": 350 }
+        "dikis": {
+          "name": "Dikiş",
+          "materialGroup": "branda",
+          "prices": { "above20": 45, "above5": 50, "below5": 50 }
         },
-        "folyo_kesim": {
-          "name": "Folyo Kesim",
-          "materialGroup": "foil",
-          "prices": { "above20": 100, "above5": 120, "below5": 140 }
+        "kusgozü_manuel_kesim": {
+          "name": "Kuşgözü + Manuel Kesim",
+          "materialGroup": "branda",
+          "prices": { "above20": 50, "above5": 50, "below5": 50 }
         },
-        "tasima_folyosu": {
-          "name": "Taşıma Folyosu",
-          "materialGroup": "foil",
-          "prices": { "above20": 80, "above5": 100, "below5": 120 }
-        },
-        "laminasyon": {
-          "name": "Laminasyon",
-          "materialGroup": "foil",
-          "prices": { "above20": 80, "above5": 100, "below5": 120 }
+        "sadece_baski": {
+          "name": "Sadece Baskı",
+          "materialGroup": "branda",
+          "prices": { "above20": 100, "above5": 100, "below5": 100 }
         }
       }
     },
@@ -126,29 +121,35 @@
         "arkasi_beyaz_folyo": {
           "name": "Arkası Beyaz Folyo",
           "materialGroup": "foil",
-          "prices": { "above20": 185, "above5": 220, "below5": 240 }
-        },
-        "beyaz_vinil": {
-          "name": "Beyaz Vinil",
-          "materialGroup": "vinyl",
-          "prices": { "above20": 205, "above5": 240, "below5": 260 }
+          "prices": { "above20": 210, "above5": 220, "below5": 350 }
         },
         "folyo_bas_kes": {
           "name": "Folyo Bas-Kes",
           "materialGroup": "foil",
-          "prices": { "above20": 300, "above5": 350, "below5": 400 }
+          "prices": { "above20": 280, "above5": 300, "below5": 350 }
+        },
+        "beyaz_vinil": {
+          "name": "Beyaz Vinil",
+          "materialGroup": "vinyl",
+          "prices": { "above20": 210, "above5": 220, "below5": 350 }
+        },
+        "sadece_baski": {
+          "name": "Sadece Baskı",
+          "materialGroup": "foil",
+          "prices": { "above20": 190, "above5": 200, "below5": 200 }
         },
         "one_way_vision": {
           "name": "One Way Vision",
           "materialGroup": "oneway",
-          "prices": { "above20": 250, "above5": 290, "below5": 320 }
+          "prices": { "above20": 240, "above5": 250, "below5": 400 }
         }
       }
     }
   },
   "materials": {
     "foil": { "widths": [105, 126, 137, 160] },
-    "vinyl": { "widths": [110, 220, 250, 320] },
+    "branda": { "widths": [110, 220, 250, 320] },
+    "vinyl": { "widths": [110] },
     "oneway": { "widths": [137, 152] }
   },
   "kdv": 0,
