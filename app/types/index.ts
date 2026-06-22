@@ -90,5 +90,6 @@ export interface Customer {
   id: string;
   name: string;
   phone?: string;
+  sabitFiyat?: boolean;
   entries: CustomerEntry[];
 }

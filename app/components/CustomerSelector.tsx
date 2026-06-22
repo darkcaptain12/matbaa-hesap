@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Customer } from '../types';
 import { netBalance } from '../hooks/useCustomers';
-import { UserCheck, Plus, ChevronDown, X } from 'lucide-react';
+import { UserCheck, Plus, ChevronDown, X, Crown } from 'lucide-react';
 import { fmt } from '../lib/calcEngine';
 
 interface Props {
@@ -58,7 +58,14 @@ export default function CustomerSelector({ customers, selectedId, onSelect, onAd
           <div className="min-w-0 flex-1">
             {selected ? (
               <div>
-                <p className="font-semibold text-sm truncate">{selected.name}</p>
+                <p className="font-semibold text-sm truncate">
+                  {selected.name}
+                  {selected.sabitFiyat && (
+                    <span className="ml-1.5 inline-flex items-center gap-0.5 bg-amber-500/15 text-amber-400 text-[9px] px-1.5 py-0.5 rounded-md font-bold">
+                      <Crown className="w-2.5 h-2.5" /> SABİT
+                    </span>
+                  )}
+                </p>
                 <p className="text-[11px] text-gray-400 mt-0.5">
                   Bakiye: <span className={netBalance(selected) > 0 ? 'text-red-400' : 'text-green-400'}>
                     {fmt(netBalance(selected))} ₺
@@ -106,7 +113,10 @@ export default function CustomerSelector({ customers, selectedId, onSelect, onAd
                     onClick={() => { onSelect(c.id); setOpen(false); setSearch(''); }}
                     className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-white/5 text-left transition-all"
                   >
-                    <span className="text-white text-sm truncate">{c.name}</span>
+                    <span className="text-white text-sm truncate flex items-center gap-1.5">
+                      {c.name}
+                      {c.sabitFiyat && <Crown className="w-3 h-3 text-amber-400 shrink-0" />}
+                    </span>
                     <span className={`text-xs font-semibold shrink-0 ml-2 ${bal > 0 ? 'text-red-400' : 'text-green-400'}`}>
                       {fmt(bal)} ₺
                     </span>

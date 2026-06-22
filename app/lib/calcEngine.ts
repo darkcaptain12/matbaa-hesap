@@ -78,13 +78,13 @@ export function createJob(
   };
 }
 
-function getPriceTier(totalM2: number): { tier: PriceTier; label: string } {
+function getPriceTier(totalM2: number, sabitFiyat: boolean): { tier: PriceTier; label: string } {
   if (totalM2 >= 20) return { tier: 'above20', label: '20 m² Üstü' };
-  if (totalM2 >= 5) return { tier: 'above5', label: '5 m² Üstü' };
+  if (totalM2 >= 5 || sabitFiyat) return { tier: 'above5', label: sabitFiyat && totalM2 < 5 ? '5 m² Üstü (Sabit)' : '5 m² Üstü' };
   return { tier: 'below5', label: '5 m² Altı' };
 }
 
-export function groupJobs(jobs: Job[], prices: PriceData, sadeceBaski: boolean): JobGroup[] {
+export function groupJobs(jobs: Job[], prices: PriceData, sadeceBaski: boolean, sabitFiyat: boolean = false): JobGroup[] {
   const groupMap = new Map<string, Job[]>();
 
   for (const job of jobs) {
@@ -98,7 +98,7 @@ export function groupJobs(jobs: Job[], prices: PriceData, sadeceBaski: boolean):
   for (const [groupKey, groupJobs] of groupMap) {
     const first = groupJobs[0];
     const totalM2 = groupJobs.reduce((sum, j) => sum + j.totalM2, 0);
-    const { tier, label } = getPriceTier(totalM2);
+    const { tier, label } = getPriceTier(totalM2, sabitFiyat);
 
     const techData = prices.techniques[first.technique];
     const product = techData?.products[first.productKey];
@@ -137,8 +137,8 @@ export function groupJobs(jobs: Job[], prices: PriceData, sadeceBaski: boolean):
   });
 }
 
-export function calcQuote(jobs: Job[], prices: PriceData, sadeceBaski: boolean): QuoteSummary {
-  const groups = groupJobs(jobs, prices, sadeceBaski);
+export function calcQuote(jobs: Job[], prices: PriceData, sadeceBaski: boolean, sabitFiyat: boolean = false): QuoteSummary {
+  const groups = groupJobs(jobs, prices, sadeceBaski, sabitFiyat);
 
   const subtotal = groups.reduce((sum, g) => sum + g.normalTotal, 0);
   const discountTotal = groups.reduce((sum, g) => sum + g.discountAmount, 0);

@@ -20,7 +20,7 @@ const PdfUploader = dynamic(() => import('./components/PdfUploader'), { ssr: fal
 
 export default function Home() {
   const { prices, updatePrices, resetPrices } = usePrices();
-  const { customers, loading: customersLoading, addCustomer, updateCustomer, addEntry, deleteCustomer, deleteEntry } = useCustomers();
+  const { customers, loading: customersLoading, addCustomer, updateCustomer, addEntry, deleteCustomer, deleteEntry, toggleSabitFiyat } = useCustomers();
 
   const [jobs, setJobs] = useState<Job[]>([]);
   const [technique, setTechnique] = useState<TechniqueKey>('uv');
@@ -33,9 +33,11 @@ export default function Home() {
 
   const selectedCustomer = customers.find((c) => c.id === selectedCustomerId);
 
+  const sabitFiyat = selectedCustomer?.sabitFiyat ?? false;
+
   const quote = useMemo(
-    () => calcQuote(jobs, prices, sadeceBaski),
-    [jobs, prices, sadeceBaski]
+    () => calcQuote(jobs, prices, sadeceBaski, sabitFiyat),
+    [jobs, prices, sadeceBaski, sabitFiyat]
   );
 
   const handleAddJobs = useCallback((newJobs: Job[]) => {
@@ -46,7 +48,7 @@ export default function Home() {
         const techData = prices.techniques[job.technique];
         const product = techData?.products[job.productKey];
         if (!product) continue;
-        const tier = job.totalM2 >= 20 ? 'above20' : job.totalM2 >= 5 ? 'above5' : 'below5' as const;
+        const tier = job.totalM2 >= 20 ? 'above20' : (job.totalM2 >= 5 || sabitFiyat) ? 'above5' : 'below5' as const;
         const unitPrice = product.prices[tier];
         const amount = job.totalM2 * unitPrice * (sadeceBaski ? (1 - prices.discountRate / 100) : 1);
         addEntry(selectedCustomerId, {
@@ -183,6 +185,7 @@ export default function Home() {
         onUpdateCustomer={updateCustomer}
         onDeleteCustomer={deleteCustomer}
         onDeleteEntry={deleteEntry}
+        onToggleSabitFiyat={toggleSabitFiyat}
       />
     </div>
   );

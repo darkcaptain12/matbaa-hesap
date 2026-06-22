@@ -105,5 +105,15 @@ export function useCustomers() {
     });
   }, [persist]);
 
-  return { customers, loading, addCustomer, updateCustomer, addEntry, deleteCustomer, deleteEntry };
+  const toggleSabitFiyat = useCallback((customerId: string) => {
+    setCustomers((prev) => {
+      const next = prev.map((c) =>
+        c.id !== customerId ? c : { ...c, sabitFiyat: !c.sabitFiyat }
+      );
+      persist(next);
+      return next;
+    });
+  }, [persist]);
+
+  return { customers, loading, addCustomer, updateCustomer, addEntry, deleteCustomer, deleteEntry, toggleSabitFiyat };
 }

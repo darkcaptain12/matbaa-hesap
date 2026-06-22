@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Customer } from '../types';
 import { netBalance } from '../hooks/useCustomers';
 import { fmt } from '../lib/calcEngine';
-import { Users, X, Plus, Trash2, ChevronDown, ChevronUp, CreditCard, TrendingDown, MessageCircle, Pencil, Check, FileDown } from 'lucide-react';
+import { Users, X, Plus, Trash2, ChevronDown, ChevronUp, CreditCard, TrendingDown, MessageCircle, Pencil, Check, FileDown, Crown } from 'lucide-react';
 
 function buildWhatsAppUrl(phone: string, name: string, balance: number): string {
   let cleaned = phone.replace(/[\s\-\(\)\+]/g, '');
@@ -81,6 +81,7 @@ interface Props {
   onUpdateCustomer: (id: string, fields: { name?: string; phone?: string }) => void;
   onDeleteCustomer: (id: string) => void;
   onDeleteEntry: (customerId: string, entryId: string) => void;
+  onToggleSabitFiyat: (id: string) => void;
 }
 
 export function CustomerPanelTrigger({ customers, onOpen }: { customers: Customer[]; onOpen: () => void }) {
@@ -100,12 +101,13 @@ export function CustomerPanelTrigger({ customers, onOpen }: { customers: Custome
   );
 }
 
-function CustomerRow({ customer, onAddEntry, onUpdateCustomer, onDeleteCustomer, onDeleteEntry }: {
+function CustomerRow({ customer, onAddEntry, onUpdateCustomer, onDeleteCustomer, onDeleteEntry, onToggleSabitFiyat }: {
   customer: Customer;
   onAddEntry: Props['onAddEntry'];
   onUpdateCustomer: Props['onUpdateCustomer'];
   onDeleteCustomer: Props['onDeleteCustomer'];
   onDeleteEntry: Props['onDeleteEntry'];
+  onToggleSabitFiyat: Props['onToggleSabitFiyat'];
 }) {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -145,7 +147,14 @@ function CustomerRow({ customer, onAddEntry, onUpdateCustomer, onDeleteCustomer,
             </div>
           ) : (
             <>
-              <p className="text-white font-medium text-sm truncate">{customer.name}</p>
+              <p className="text-white font-medium text-sm truncate">
+                {customer.name}
+                {customer.sabitFiyat && (
+                  <span className="ml-1.5 inline-flex items-center gap-0.5 bg-amber-500/15 text-amber-400 text-[9px] px-1.5 py-0.5 rounded-md font-bold uppercase">
+                    <Crown className="w-2.5 h-2.5" /> Sabit
+                  </span>
+                )}
+              </p>
               <p className="text-xs mt-0.5">
                 {customer.phone && <span className="text-gray-500">{customer.phone} · </span>}
                 {balance > 0
@@ -168,6 +177,11 @@ function CustomerRow({ customer, onAddEntry, onUpdateCustomer, onDeleteCustomer,
               <button onClick={(e) => { e.stopPropagation(); setEditName(customer.name); setEditPhone(customer.phone || ''); setEditing(true); }}
                 className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-500 hover:text-gray-300 transition-all" title="Düzenle">
                 <Pencil className="w-3.5 h-3.5" />
+              </button>
+              <button onClick={(e) => { e.stopPropagation(); onToggleSabitFiyat(customer.id); }}
+                className={`p-1.5 rounded-lg transition-all ${customer.sabitFiyat ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30' : 'bg-white/5 text-gray-600 hover:bg-white/10 hover:text-gray-400'}`}
+                title={customer.sabitFiyat ? 'Sabit fiyat aktif — tıkla kapat' : 'Sabit fiyat aç (5m² altı yok)'}>
+                <Crown className="w-3.5 h-3.5" />
               </button>
               {balance > 0 && customer.phone && (
                 <a href={buildWhatsAppUrl(customer.phone, customer.name, balance)} target="_blank" rel="noopener noreferrer"
@@ -241,7 +255,7 @@ function CustomerRow({ customer, onAddEntry, onUpdateCustomer, onDeleteCustomer,
   );
 }
 
-export default function CustomerPanel({ customers, loading, open, onClose, onAddEntry, onUpdateCustomer, onDeleteCustomer, onDeleteEntry }: Props) {
+export default function CustomerPanel({ customers, loading, open, onClose, onAddEntry, onUpdateCustomer, onDeleteCustomer, onDeleteEntry, onToggleSabitFiyat }: Props) {
   const totalDebt = customers.reduce((s, c) => s + Math.max(0, netBalance(c)), 0);
 
   return (
@@ -289,7 +303,7 @@ export default function CustomerPanel({ customers, loading, open, onClose, onAdd
               ) : (
                 <div className="space-y-2">
                   {customers.map((c) => (
-                    <CustomerRow key={c.id} customer={c} onAddEntry={onAddEntry} onUpdateCustomer={onUpdateCustomer} onDeleteCustomer={onDeleteCustomer} onDeleteEntry={onDeleteEntry} />
+                    <CustomerRow key={c.id} customer={c} onAddEntry={onAddEntry} onUpdateCustomer={onUpdateCustomer} onDeleteCustomer={onDeleteCustomer} onDeleteEntry={onDeleteEntry} onToggleSabitFiyat={onToggleSabitFiyat} />
                   ))}
                 </div>
               )}
