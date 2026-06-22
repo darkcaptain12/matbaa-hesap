@@ -63,11 +63,11 @@ export default function AdminPanel({ open, onClose, prices, onUpdate, onReset }:
     }));
   };
 
-  const setMaterialWidth = (material: 'folyo' | 'vinil', index: number, value: number) => {
+  const setMaterialWidth = (mg: 'foil' | 'vinyl' | 'oneway', index: number, value: number) => {
     setLocal((p) => {
-      const widths = [...p.materials[material].widths];
+      const widths = [...p.materials[mg].widths];
       widths[index] = value;
-      return { ...p, materials: { ...p.materials, [material]: { widths: widths.sort((a, b) => a - b) } } };
+      return { ...p, materials: { ...p.materials, [mg]: { widths: widths.sort((a, b) => a - b) } } };
     });
   };
 
@@ -184,9 +184,9 @@ export default function AdminPanel({ open, onClose, prices, onUpdate, onReset }:
                   {/* Material Widths */}
                   <div className="space-y-3">
                     <h3 className="text-gray-400 text-[10px] uppercase tracking-widest font-semibold">Malzeme Enleri (cm)</h3>
-                    {(['folyo', 'vinil'] as const).map((mat) => (
+                    {([['foil', 'Folyo'], ['vinyl', 'Vinil'], ['oneway', 'One Way Vision']] as const).map(([mat, label]) => (
                       <div key={mat} className="bg-black/30 rounded-xl p-3">
-                        <p className="text-xs text-gray-400 font-semibold mb-2">{mat.charAt(0).toUpperCase() + mat.slice(1)}</p>
+                        <p className="text-xs text-gray-400 font-semibold mb-2">{label}</p>
                         <div className="flex gap-2 flex-wrap">
                           {local.materials[mat].widths.map((w, i) => (
                             <input

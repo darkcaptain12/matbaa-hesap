@@ -11,7 +11,7 @@ export function generateQuoteHtml(quote: QuoteSummary, companyName: string, sade
         <td style="padding:10px 14px;color:#6b7280;font-size:12px;text-align:center;">${i + 1}</td>
         <td style="padding:10px 14px;font-size:12px;color:#111;font-weight:500;">
           ${g.productName}
-          <div style="font-size:10px;color:#9ca3af;margin-top:2px;">${g.techniqueName} · ${g.materialWidth}cm ${g.materialType}</div>
+          <div style="font-size:10px;color:#9ca3af;margin-top:2px;">${g.techniqueName} · ${g.materialWidth}cm ${g.materialGroup}</div>
         </td>
         <td style="padding:10px 14px;font-size:12px;color:#374151;text-align:center;">
           ${g.jobs.length}
@@ -41,7 +41,7 @@ export function generateQuoteHtml(quote: QuoteSummary, companyName: string, sade
       <tr style="font-size:11px;">
         <td style="padding:6px 14px;color:#9ca3af;">${j.fileName}</td>
         <td style="padding:6px 14px;color:#6b7280;text-align:center;">${j.width}×${j.height} cm</td>
-        <td style="padding:6px 14px;color:#6b7280;text-align:center;">${j.selectedWidth}cm ${j.material}${j.rotated ? ' ↻' : ''}</td>
+        <td style="padding:6px 14px;color:#6b7280;text-align:center;">${j.selectedWidth}cm ${j.materialGroup}${j.rotated ? ' ↻' : ''}</td>
         <td style="padding:6px 14px;color:#6b7280;text-align:center;">${fmt(j.totalM2)} m²</td>
         <td style="padding:6px 14px;color:#6b7280;text-align:center;">%${fmt(j.wastePercent)}</td>
       </tr>`)

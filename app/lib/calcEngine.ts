@@ -1,4 +1,4 @@
-import type { PriceData, Job, JobGroup, QuoteSummary, MaterialType, PriceTier, TechniqueKey } from '../types';
+import type { PriceData, Job, JobGroup, QuoteSummary, MaterialGroup, PriceTier, TechniqueKey } from '../types';
 
 function genId(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -6,6 +6,12 @@ function genId(): string {
   }
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
+
+export const MATERIAL_LABELS: Record<MaterialGroup, string> = {
+  foil: 'Folyo',
+  vinyl: 'Vinil',
+  oneway: 'One Way',
+};
 
 function findBestOrientation(widths: number[], width: number, height: number) {
   const sorted = [...widths].sort((a, b) => a - b);
@@ -48,8 +54,8 @@ export function createJob(
   const product = techData.products[productKey];
   if (!product) return null;
 
-  const material = product.material as MaterialType;
-  const availableWidths = prices.materials[material]?.widths;
+  const mg = product.materialGroup as MaterialGroup;
+  const availableWidths = prices.materials[mg]?.widths;
   if (!availableWidths || availableWidths.length === 0) return null;
 
   const { selectedWidth, cutLength, rotated } = findBestOrientation(availableWidths, width, height);
@@ -58,7 +64,7 @@ export function createJob(
   const exactM2 = (width / 100) * (height / 100);
   const wastePercent = exactM2 > 0 ? ((totalM2 - exactM2) / exactM2) * 100 : 0;
 
-  const groupKey = `${technique}_${productKey}_${selectedWidth}_${material}`;
+  const groupKey = `${technique}_${productKey}_${selectedWidth}_${mg}`;
 
   return {
     id: genId(),
@@ -68,7 +74,7 @@ export function createJob(
     technique,
     productKey,
     productName: product.name,
-    material,
+    materialGroup: mg,
     selectedWidth,
     cutLength,
     rotated,
@@ -117,7 +123,7 @@ export function groupJobs(jobs: Job[], prices: PriceData, sadeceBaski: boolean, 
       techniqueName: techData.name,
       productKey: first.productKey,
       productName: product.name,
-      materialType: first.material,
+      materialGroup: first.materialGroup,
       materialWidth: first.selectedWidth,
       jobs: groupJobs,
       totalM2,
@@ -131,7 +137,7 @@ export function groupJobs(jobs: Job[], prices: PriceData, sadeceBaski: boolean, 
   }
 
   return groups.sort((a, b) => {
-    if (a.materialType !== b.materialType) return a.materialType.localeCompare(b.materialType);
+    if (a.materialGroup !== b.materialGroup) return a.materialGroup.localeCompare(b.materialGroup);
     if (a.materialWidth !== b.materialWidth) return a.materialWidth - b.materialWidth;
     return a.productName.localeCompare(b.productName);
   });

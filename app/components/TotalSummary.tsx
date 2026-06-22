@@ -61,7 +61,7 @@ export default function TotalSummary({ quote, sadeceBaski, companyName, onCompan
               {quote.groups.map((g) => (
                 <div key={g.groupKey} className="flex items-center justify-between text-[11px]">
                   <span className="text-gray-500 truncate">
-                    {g.materialWidth} {g.materialType} · {g.productName}
+                    {g.materialWidth} {g.materialGroup} · {g.productName}
                   </span>
                   <span className="text-gray-400 font-medium shrink-0 ml-2">{fmt(g.groupTotal)} ₺</span>
                 </div>

@@ -2,6 +2,7 @@
 import { motion } from 'framer-motion';
 import { Zap, Waves, RotateCw, Check } from 'lucide-react';
 import type { PriceData, TechniqueKey } from '../types';
+import { MATERIAL_LABELS } from '../lib/calcEngine';
 
 interface Props {
   prices: PriceData;
@@ -82,11 +83,11 @@ export default function ConfigBar({
               >
                 <span className="text-sm font-medium">{product.name}</span>
                 <span className={`text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md ${
-                  product.material === 'folyo'
-                    ? 'bg-amber-500/10 text-amber-500/80'
+                  product.materialGroup === 'foil' ? 'bg-amber-500/10 text-amber-500/80'
+                    : product.materialGroup === 'oneway' ? 'bg-purple-500/10 text-purple-500/80'
                     : 'bg-sky-500/10 text-sky-500/80'
                 }`}>
-                  {product.material}
+                  {MATERIAL_LABELS[product.materialGroup] || product.materialGroup}
                 </span>
               </button>
             );

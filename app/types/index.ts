@@ -1,5 +1,5 @@
 export type TechniqueKey = 'uv' | 'solvent' | 'uv_roll';
-export type MaterialType = 'folyo' | 'vinil';
+export type MaterialGroup = 'foil' | 'vinyl' | 'oneway';
 export type PriceTier = 'above20' | 'above5' | 'below5';
 
 export interface ProductPrices {
@@ -10,7 +10,7 @@ export interface ProductPrices {
 
 export interface Product {
   name: string;
-  material: MaterialType;
+  materialGroup: MaterialGroup;
   prices: ProductPrices;
 }
 
@@ -25,7 +25,7 @@ export interface MaterialConfig {
 
 export interface PriceData {
   techniques: Record<TechniqueKey, Technique>;
-  materials: Record<MaterialType, MaterialConfig>;
+  materials: Record<MaterialGroup, MaterialConfig>;
   kdv: number;
   discountRate: number;
   minJobPrice: number;
@@ -39,7 +39,7 @@ export interface Job {
   technique: TechniqueKey;
   productKey: string;
   productName: string;
-  material: MaterialType;
+  materialGroup: MaterialGroup;
   selectedWidth: number;
   cutLength: number;
   rotated: boolean;
@@ -54,7 +54,7 @@ export interface JobGroup {
   techniqueName: string;
   productKey: string;
   productName: string;
-  materialType: MaterialType;
+  materialGroup: MaterialGroup;
   materialWidth: number;
   jobs: Job[];
   totalM2: number;

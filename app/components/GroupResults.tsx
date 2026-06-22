@@ -2,7 +2,7 @@
 import { motion } from 'framer-motion';
 import { Layers, TrendingUp, Percent } from 'lucide-react';
 import type { JobGroup } from '../types';
-import { fmt } from '../lib/calcEngine';
+import { fmt, MATERIAL_LABELS } from '../lib/calcEngine';
 
 interface Props {
   groups: JobGroup[];
@@ -33,7 +33,7 @@ export default function GroupResults({ groups, sadeceBaski }: Props) {
           <div className="px-4 py-3 border-b border-white/6 flex items-center justify-between">
             <div>
               <p className="text-white text-sm font-semibold">
-                {group.materialWidth} cm {group.materialType.charAt(0).toUpperCase() + group.materialType.slice(1)}
+                {group.materialWidth} cm {MATERIAL_LABELS[group.materialGroup]}
               </p>
               <p className="text-gray-500 text-[11px] mt-0.5">
                 {group.techniqueName} · {group.productName}

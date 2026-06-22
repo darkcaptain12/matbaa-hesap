@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trash2, ChevronDown, ChevronUp, FileText, RotateCw, Pencil, Check, X } from 'lucide-react';
 import type { Job, PriceData, TechniqueKey } from '../types';
-import { createJob, fmt } from '../lib/calcEngine';
+import { createJob, fmt, MATERIAL_LABELS } from '../lib/calcEngine';
 
 interface Props {
   jobs: Job[];
@@ -78,7 +78,7 @@ function JobRow({ job, prices, index, onRemove, onUpdate }: {
                 {job.fileName}
               </p>
               <p className="text-gray-500 text-[11px] mt-0.5">
-                {job.width}×{job.height} cm → {job.selectedWidth} cm {job.material}
+                {job.width}×{job.height} cm → {job.selectedWidth} cm {MATERIAL_LABELS[job.materialGroup]}
                 {job.rotated && <RotateCw className="w-2.5 h-2.5 inline ml-1 text-orange-400/60" />}
                 {' '}· {fmt(job.totalM2)} m²
               </p>
@@ -136,7 +136,7 @@ function JobRow({ job, prices, index, onRemove, onUpdate }: {
                 <span className="text-gray-500">Ürün</span>
                 <span className="text-gray-300 text-right">{job.productName}</span>
                 <span className="text-gray-500">Malzeme</span>
-                <span className="text-gray-300 text-right">{job.material} · {job.selectedWidth} cm</span>
+                <span className="text-gray-300 text-right">{MATERIAL_LABELS[job.materialGroup]} · {job.selectedWidth} cm</span>
                 <span className="text-gray-500">Ölçü</span>
                 <span className="text-gray-300 text-right">{job.width} × {job.height} cm {job.rotated ? '(döndürülmüş)' : ''}</span>
                 <span className="text-gray-500">Hesaplanan Alan</span>
