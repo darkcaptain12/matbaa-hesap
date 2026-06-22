@@ -3,26 +3,35 @@ import { useState, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import { usePrices } from './hooks/usePrices';
+import { useCustomers } from './hooks/useCustomers';
 import { calcQuote } from './lib/calcEngine';
 import { openQuotePdf } from './components/QuotePdf';
 import Header from './components/Header';
 import ConfigBar from './components/ConfigBar';
+import CustomerSelector from './components/CustomerSelector';
 import JobTable from './components/JobTable';
 import GroupResults from './components/GroupResults';
 import TotalSummary from './components/TotalSummary';
 import AdminPanel from './components/AdminPanel';
+import CustomerPanel from './components/CustomerPanel';
 import type { Job, TechniqueKey } from './types';
 
 const PdfUploader = dynamic(() => import('./components/PdfUploader'), { ssr: false });
 
 export default function Home() {
   const { prices, updatePrices, resetPrices } = usePrices();
+  const { customers, loading: customersLoading, addCustomer, updateCustomer, addEntry, deleteCustomer, deleteEntry } = useCustomers();
+
   const [jobs, setJobs] = useState<Job[]>([]);
   const [technique, setTechnique] = useState<TechniqueKey>('uv');
   const [productKey, setProductKey] = useState('');
   const [sadeceBaski, setSadeceBaski] = useState(false);
   const [companyName, setCompanyName] = useState('');
   const [adminOpen, setAdminOpen] = useState(false);
+  const [customerPanelOpen, setCustomerPanelOpen] = useState(false);
+  const [selectedCustomerId, setSelectedCustomerId] = useState('');
+
+  const selectedCustomer = customers.find((c) => c.id === selectedCustomerId);
 
   const quote = useMemo(
     () => calcQuote(jobs, prices, sadeceBaski),
@@ -31,7 +40,23 @@ export default function Home() {
 
   const handleAddJobs = useCallback((newJobs: Job[]) => {
     setJobs((prev) => [...prev, ...newJobs]);
-  }, []);
+    // Müşteri seçiliyse her iş için borç kaydı ekle
+    if (selectedCustomerId) {
+      for (const job of newJobs) {
+        const techData = prices.techniques[job.technique];
+        const product = techData?.products[job.productKey];
+        if (!product) continue;
+        const tier = job.totalM2 >= 20 ? 'above20' : job.totalM2 >= 5 ? 'above5' : 'below5' as const;
+        const unitPrice = product.prices[tier];
+        const amount = job.totalM2 * unitPrice * (sadeceBaski ? (1 - prices.discountRate / 100) : 1);
+        addEntry(selectedCustomerId, {
+          type: 'charge',
+          amount,
+          note: `${product.name} – ${job.width}×${job.height} cm`,
+        });
+      }
+    }
+  }, [selectedCustomerId, addEntry, prices, sadeceBaski]);
 
   const handleRemoveJob = useCallback((id: string) => {
     setJobs((prev) => prev.filter((j) => j.id !== id));
@@ -47,15 +72,19 @@ export default function Home() {
 
   const handleGeneratePdf = useCallback(() => {
     if (quote.groups.length === 0) return;
-    openQuotePdf(quote, companyName, sadeceBaski);
-  }, [quote, companyName, sadeceBaski]);
+    openQuotePdf(quote, companyName || selectedCustomer?.name || '', sadeceBaski);
+  }, [quote, companyName, selectedCustomer, sadeceBaski]);
 
   return (
     <div className="min-h-screen bg-[#060606] text-white">
-      <Header jobCount={jobs.length} onAdminOpen={() => setAdminOpen(true)} />
+      <Header
+        jobCount={jobs.length}
+        customers={customers}
+        onAdminOpen={() => setAdminOpen(true)}
+        onCustomersOpen={() => setCustomerPanelOpen(true)}
+      />
 
       <main className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        {/* Title */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -69,15 +98,20 @@ export default function Home() {
           </p>
         </motion.div>
 
-        {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr_380px] gap-5 items-start">
-          {/* Left: Config */}
+          {/* Sol: Config + Müşteri */}
           <motion.div
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
             className="space-y-4"
           >
+            <CustomerSelector
+              customers={customers}
+              selectedId={selectedCustomerId}
+              onSelect={setSelectedCustomerId}
+              onAddCustomer={addCustomer}
+            />
             <ConfigBar
               prices={prices}
               technique={technique}
@@ -89,7 +123,7 @@ export default function Home() {
             />
           </motion.div>
 
-          {/* Center: Upload + Jobs */}
+          {/* Orta: Upload + İşler + Gruplar */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -114,7 +148,7 @@ export default function Home() {
             )}
           </motion.div>
 
-          {/* Right: Summary */}
+          {/* Sağ: Özet */}
           <motion.div
             initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
@@ -124,7 +158,7 @@ export default function Home() {
             <TotalSummary
               quote={quote}
               sadeceBaski={sadeceBaski}
-              companyName={companyName}
+              companyName={companyName || selectedCustomer?.name || ''}
               onCompanyNameChange={setCompanyName}
               onGeneratePdf={handleGeneratePdf}
             />
@@ -138,6 +172,17 @@ export default function Home() {
         prices={prices}
         onUpdate={updatePrices}
         onReset={resetPrices}
+      />
+
+      <CustomerPanel
+        customers={customers}
+        loading={customersLoading}
+        open={customerPanelOpen}
+        onClose={() => setCustomerPanelOpen(false)}
+        onAddEntry={addEntry}
+        onUpdateCustomer={updateCustomer}
+        onDeleteCustomer={deleteCustomer}
+        onDeleteEntry={deleteEntry}
       />
     </div>
   );

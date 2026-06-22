@@ -75,3 +75,20 @@ export interface QuoteSummary {
   kdvAmount: number;
   grandTotal: number;
 }
+
+// ─── Müşteri ──────────────────────────────────────────────────────────────────
+
+export interface CustomerEntry {
+  id: string;
+  type: 'charge' | 'payment';
+  amount: number;
+  date: string;
+  note: string;
+}
+
+export interface Customer {
+  id: string;
+  name: string;
+  phone?: string;
+  entries: CustomerEntry[];
+}
