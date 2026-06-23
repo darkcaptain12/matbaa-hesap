@@ -115,12 +115,22 @@ function CustomerRow({ customer, onAddEntry, onUpdateCustomer, onDeleteCustomer,
   const [editPhone, setEditPhone] = useState(customer.phone || '');
   const [payAmt, setPayAmt] = useState('');
   const [payNote, setPayNote] = useState('');
+  const [chargeAmt, setChargeAmt] = useState('');
+  const [chargeNote, setChargeNote] = useState('');
   const balance = netBalance(customer);
 
   const handleEditSave = () => {
     if (!editName.trim()) return;
     onUpdateCustomer(customer.id, { name: editName, phone: editPhone });
     setEditing(false);
+  };
+
+  const handleManualCharge = () => {
+    const amt = parseFloat(chargeAmt);
+    if (!amt || amt <= 0 || !chargeNote.trim()) return;
+    onAddEntry(customer.id, { type: 'charge', amount: amt, note: chargeNote.trim() });
+    setChargeAmt('');
+    setChargeNote('');
   };
 
   const handlePayment = () => {
@@ -209,6 +219,23 @@ function CustomerRow({ customer, onAddEntry, onUpdateCustomer, onDeleteCustomer,
         {open && (
           <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="overflow-hidden">
             <div className="border-t border-white/8 p-4 space-y-4">
+              {/* Manuel Borç Ekle */}
+              <div className="bg-red-500/5 border border-red-500/20 rounded-xl p-3 space-y-2">
+                <div className="flex items-center gap-2 text-red-400 text-xs font-semibold uppercase tracking-wider">
+                  <Plus className="w-3.5 h-3.5" /> Manuel Borç Ekle
+                </div>
+                <div className="flex gap-2">
+                  <input type="number" min="0" value={chargeAmt} onChange={(e) => setChargeAmt(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleManualCharge()} placeholder="Tutar (₺)"
+                    className="w-28 bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-red-500/50" />
+                  <input type="text" value={chargeNote} onChange={(e) => setChargeNote(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleManualCharge()} placeholder="Açıklama (zorunlu)"
+                    className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-red-500/50" />
+                  <button onClick={handleManualCharge} disabled={!chargeAmt || parseFloat(chargeAmt) <= 0 || !chargeNote.trim()}
+                    className="px-3 py-2 bg-red-600 hover:bg-red-500 disabled:opacity-40 text-white rounded-lg transition-all text-sm font-medium shrink-0">
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
               {/* Ödeme Al */}
               <div className="bg-green-500/5 border border-green-500/20 rounded-xl p-3 space-y-2">
                 <div className="flex items-center gap-2 text-green-400 text-xs font-semibold uppercase tracking-wider">
