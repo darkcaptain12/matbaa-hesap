@@ -41,8 +41,8 @@ export default function PdfUploader({ technique, productKey, prices, onAddJobs }
           const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
           const page = await pdf.getPage(1);
           const vp = page.getViewport({ scale: 1 });
-          const wCm = Math.round((vp.width * 25.4) / 72 * 10) / 10;
-          const hCm = Math.round((vp.height * 25.4) / 72 * 10) / 10;
+          const wCm = Math.round((vp.width * 25.4 / 72 / 10) * 10) / 10;
+          const hCm = Math.round((vp.height * 25.4 / 72 / 10) * 10) / 10;
 
           if (wCm > 0 && hCm > 0) {
             const job = createJob(wCm, hCm, technique, productKey, prices, file.name);
